@@ -4,16 +4,13 @@ import java.util.*;
  * Created by kc on 11/29/16.
  */
 public class Site {
-  private final int _number;
-  private boolean _failed;
-  private Map<Integer, Integer> _lockTable;
-  private Map<Integer, Integer> _variables;
+  private final int _sid;
+  private boolean _failed = false;
+  private Map<Integer, Integer> _variables = new HashMap<>();
+  private Map<Integer, ArrayList<Lock>> _lockTable = new HashMap<>();
 
   public Site(int number) {
-    _number = number;
-    _failed = false;
-    _lockTable = new HashMap<>();
-    _variables = new HashMap<>();
+    _sid = number;
   }
 
   public void fail() {
@@ -29,20 +26,28 @@ public class Site {
     return _failed;
   }
 
-  public void addVariable(int variable, int value) {
-    _variables.put(variable, value);
+  public void addVariable(int variable) {
+    if (!_variables.containsKey(variable)) {
+      _variables.put(variable, 0);
+    }
   }
 
-  public int readVariable(int variable) {
-    checkLock(variable);
-    return _variables.get(variable);
+  @Override
+  public boolean equals(Object ob) {
+    if (ob == this) {
+      return true;
+    }
+
+    if (!(ob instanceof Site)) {
+      return false;
+    }
+
+    Site s = (Site) ob;
+    return _sid == s._sid;
   }
 
-  public int writeVariable(int variable, int value) {
-    checkLock(variable);
-    _variables.put(variable, value);
-    return value;
-  }
-  private void checkLock(int variable) {
+  @Override
+  public int hashCode() {
+    return Objects.hash(_sid);
   }
 }

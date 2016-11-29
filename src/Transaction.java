@@ -6,15 +6,20 @@ import java.util.List;
  */
 public class Transaction {
   private final int _number;
-  private final long _timestamp;
+  private final long _startTimestamp;
   private final boolean _readOnly;
-  private List<Operation> _operations;
+  private final List<Operation> _operations;
+  private long _endTimeStamp;
 
   public Transaction(int number, long timestamp, boolean readOnly) {
     _number = number;
-    _timestamp = timestamp;
+    _startTimestamp = timestamp;
     _readOnly = readOnly;
     _operations = new ArrayList<>();
+  }
+
+  public void commit(long endTime) {
+    _endTimeStamp = endTime;
   }
 
   public void addOperation(Operation op) {
