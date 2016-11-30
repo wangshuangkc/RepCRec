@@ -1,20 +1,35 @@
 /**
- * Created by kc on 11/29/16.
+ * Operation object storing:
+ * operation type (Read or Write), the starting timestamp, the variable Id
+ * @author Shuang on 11/29/16.
  */
 public class Operation {
   private final OperationType _type;
-  private final long _timeStamp;
+  private final int _timeStamp;
   private final int _variableId;
   private int _value;
 
-
-  public Operation(OperationType type, long timeStamp, int variable) {
+  /**
+   * Constructor for Read
+   * @param type Read
+   * @param timeStamp start time
+   * @param variable variable Id
+   */
+  public Operation(OperationType type, int timeStamp, int variable) {
     _type = type;
     _timeStamp = timeStamp;
     _variableId = variable;
   }
 
-  public Operation(OperationType type, long timeStamp, int variable, int value) {
+  /**
+   * Constructor for Write
+   * @param type Write
+   * @param timeStamp start time
+   * @param variable variable Id
+   * @param value the writing value
+   * @throws IllegalArgumentException if the type is not Write
+   */
+  public Operation(OperationType type, int timeStamp, int variable, int value) {
     if (type != OperationType.W) {
       throw new IllegalArgumentException("Error: operation should be WRITE");
     }

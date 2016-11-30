@@ -1,17 +1,30 @@
 import java.util.Objects;
 
 /**
- * Created by kc on 11/29/16.
+ * Lock object storing:
+ * lock type (Read or Write), holder transaction Id, variable id
+ * @author  on 11/29/16.
  */
 public class Lock {
   private final LockType _type;
   private final int _transactionId;
   private final int _variableId;
+  private boolean shared;
 
   public Lock(LockType type, int transaction, int variable) {
     _type = type;
     _transactionId = transaction;
     _variableId = variable;
+    shared = _type == LockType.RL;
+  }
+
+  /**
+   * Check if the variable has a shared lock and can be assigned another lock
+   * @param lock another lock attempting to access this
+   * @return true if both locks are Read Lock, false if either is Write Lock.
+   */
+  public boolean canShare(Lock lock) {
+    return shared && lock.shared;
   }
 
   @Override
