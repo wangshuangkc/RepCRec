@@ -10,11 +10,11 @@ import java.util.*;
 public class Site {
   private final int _sid;
   private boolean _failed = false;
-  private Map<Integer, Variable> _variables = new HashMap<>();
-  private Map<Integer, List<Lock>> _lockTable = new HashMap<>();
+  private Map<String, Variable> _variables = new HashMap<>();
+  private Map<String, List<Lock>> _lockTable = new HashMap<>();
 
-  public Site(int number) {
-    _sid = number;
+  public Site(int id) {
+    _sid = id;
   }
 
   /**
@@ -62,7 +62,7 @@ public class Site {
    * @return true if the variable does not hold any lock or the current lock can be shared with the new lock, false other wise
    * @throws IllegalArgumentException if the variable is not found in the site
    */
-  public boolean lockVariable(Lock lock, int variable) {
+  public boolean lockVariable(Lock lock, String variable) {
     if (!_variables.containsKey(variable)) {
       throw new IllegalArgumentException("Error: variabld #" + variable + " not found in the Site #" + _sid);
     }

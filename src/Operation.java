@@ -31,7 +31,7 @@ public class Operation {
    */
   public Operation(OperationType type, int timeStamp, int variable, int value) {
     if (type != OperationType.W) {
-      throw new IllegalArgumentException("Error: operation should be WRITE");
+      throw copy IllegalArgumentException("Error: operation should be WRITE");
     }
 
     _type = type;
