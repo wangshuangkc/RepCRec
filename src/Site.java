@@ -1,5 +1,5 @@
 import java.util.*;
-
+import java.util.Map;
 /**
  * Site Object storing:
  * site Id, variable map, status (if failed), and
@@ -12,7 +12,7 @@ public class Site {
   private boolean _failed = false;
   private Map<String, Boolean> _canReads;
   private Map<String, Variable> _variables;
-  private Map<String, List<Lock>> _lockTable = new HashMap<>();
+  private Map<String, List<Lock>> _lockTable = new HashMap<String, List<Lock>>();
 
   public Site(int id) {
     _sid = id;
@@ -74,6 +74,17 @@ public class Site {
     _lockTable.put(variable, locks);
 
     return var.lock(lock);
+  }
+
+  // release the locks from an absorted trasaction in this site when dead lock detected, by Yuchang
+  public void releaseLocks(Transaction t) {
+    for(String var: _lockTable.keySet()) {
+      for(Lock lock: _lockTable.get(var)) {
+        if(lock._transactionId == t._id) {
+          _lockTable.get(var).remove(lock);
+        }
+      }
+    }
   }
 
   @Override

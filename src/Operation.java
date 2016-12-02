@@ -4,9 +4,9 @@
  * @author Shuang on 11/29/16.
  */
 public class Operation {
-  private final OperationType _type;
-  private final int _timeStamp;
-  private final int _variableId;
+  public final OperationType _type;
+  public final int _timeStamp;
+  public final int _variableId;
   private int _value;
 
   /**
