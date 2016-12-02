@@ -1,6 +1,4 @@
-import java.util.ArrayList;
 import java.util.LinkedList;
-import java.util.List;
 import java.util.Queue;
 
 /**
@@ -9,14 +7,14 @@ import java.util.Queue;
  * @author Shuang on 11/29/16.
  */
 public class Transaction {
-  private final int _number;
-  private final int _startTimestamp;
+  public final int _id;
+  public final int _startTimestamp;
   public final boolean _readOnly;
-  private final Queue<Operation> _pendingOperations;
+  public final Queue<Operation> _pendingOperations;
   private int _endTimeStamp;
 
-  public Transaction(int number, int timestamp, boolean readOnly) {
-    _number = number;
+  public Transaction(int id, int timestamp, boolean readOnly) {
+    _id = id;
     _startTimestamp = timestamp;
     _readOnly = readOnly;
     _pendingOperations = new LinkedList<>();

@@ -6,9 +6,9 @@ import java.util.Objects;
  * @author  on 11/29/16.
  */
 public class Lock {
-  private final LockType _type;
-  private final int _transactionId;
-  private final int _variableId;
+  public final LockType _type;
+  public final int _transactionId;
+  public final int _variableId;
   private boolean shared;
 
   public Lock(LockType type, int transaction, int variable) {
@@ -26,6 +26,7 @@ public class Lock {
   public boolean canShare(Lock lock) {
     return shared && lock.shared;
   }
+
 
   @Override
   public boolean equals(Object ob) {

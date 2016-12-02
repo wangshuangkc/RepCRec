@@ -80,4 +80,29 @@ public class TransactionManager {
     _runningSites.add(site);
   }
 
+  // DeadLock detect when transaction need to be added into wait list, by Yuchang
+  public void detectDeadLock(Transaction t) {
+    if(_waitingList.contains(t) && _waitingList.size() > 1) {
+      System.out.println("Dead Lock Detected!");
+      // find the transaction in wait list which timestamp is smallest
+      Transaction abortOne = t;
+      int ts = 0;
+      for(int id: _waitingList) {
+        if(_transactions.get(id)._startTimestamp > ts) {
+          ts = _transactions.get(id)._startTimestamp;
+          abortOne =  _transactions.get(id);
+        }
+      }
+      abortTransaction(abortOne);
+    }
+  }
+
+  // absort transaction which is youngest, by Yuchang
+  public void abortTransaction(Transaction abortOne) {
+    for(Site site: _runningSites) {
+      site.releaseLocks(abortOne);
+    }
+    //remove t from wait list
+    _waitingList.remove(abortOne);
+  }
 }

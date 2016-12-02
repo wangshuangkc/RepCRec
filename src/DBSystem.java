@@ -1,6 +1,5 @@
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Vector;
 
 /**
  * Created by kc on 12/1/16.
@@ -20,6 +19,7 @@ public class DBSystem {
     s.fail();
     _tm.failSite(s);
   }
+
 
   private List<Site> setupSites() {
     List<Variable> variables = setupVariables();
