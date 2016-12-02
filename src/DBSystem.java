@@ -16,8 +16,9 @@ public class DBSystem {
   }
 
   public void failSite(int sid) {
-    _sites.get(sid).fail();
-    _tm.
+    Site s = _sites.get(sid);
+    s.fail();
+    _tm.failSite(s);
   }
 
   private List<Site> setupSites() {

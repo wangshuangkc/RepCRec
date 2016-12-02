@@ -7,7 +7,6 @@ import java.util.*;
 public class TransactionManager {
   private int _timestamp = 0;
   private Map<Integer, Transaction> _transactions = new HashMap<>();
-  private Queue<Operation> _pendingOperations = new LinkedList<>();
   private List<Integer> _waitingList = new ArrayList<>();
   private List<Integer> _abortList = new ArrayList<>();
   private List<Site> _runningSites;
