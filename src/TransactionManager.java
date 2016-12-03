@@ -192,10 +192,20 @@ public class TransactionManager {
     }
 
     _waitingList.remove(abortOne);
+
+    //update the _waitForGraph, clear all t waiting for abort t, remove abort t from waitlist if any t has it, by Yuchang
+    for(String tid: _waitForGraph.keySet()) {
+      if(tid == abortOne._tid) _waitForGraph.get(tid).clear();
+      else {
+        for (String child : _waitForGraph.get(tid)) {
+          if (child == abortOne._tid) _waitForGraph.get(tid).remove(child);
+        }
+      }
+    }
   }
 
   public static void main(String[] args) {
-    System.out.println("Test deadlock detecthion");
+    System.out.println("Test deadlock detection");
     DBSystem dbs = new DBSystem();
     TransactionManager tm = new TransactionManager(dbs);
     tm._transactions.put("T1", new Transaction("T1", 1, false));
