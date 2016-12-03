@@ -10,6 +10,9 @@ public class TransactionManager {
   private List<Integer> _waitingList = new ArrayList<>();
   private List<Integer> _abortList = new ArrayList<>();
   private List<Site> _runningSites;
+  private Map<Integer, List<Integer> > _waitForGraph;
+  private List<Integer> _cycleList;
+
 
   public TransactionManager (DBSystem dbs) {
     _runningSites = dbs._sites;
@@ -82,18 +85,38 @@ public class TransactionManager {
 
   // DeadLock detect when transaction need to be added into wait list, by Yuchang
   public void detectDeadLock(Transaction t) {
-    if(_waitingList.contains(t) && _waitingList.size() > 1) {
+    if(_waitingList.contains(t)) {
       System.out.println("Dead Lock Detected!");
       // find the transaction in wait list which timestamp is smallest
+      getCycle(t._id);
       Transaction abortOne = t;
       int ts = 0;
-      for(int id: _waitingList) {
+      for(int id: _cycleList) {
         if(_transactions.get(id)._startTimestamp > ts) {
           ts = _transactions.get(id)._startTimestamp;
           abortOne =  _transactions.get(id);
         }
       }
       abortTransaction(abortOne);
+      _cycleList.clear(); //reset _cycleList
+    }
+  }
+
+  private void getCycle(int start) {
+    List<Integer> cycleList = new ArrayList<>();
+    dfs(start, cycleList);
+  }
+
+  private void dfs(int current, List<Integer> cycleList) {
+    if(_waitForGraph.size() == 0 && !_waitForGraph.containsKey(current)) return;
+    for(int tid: _waitForGraph.get(current)) {
+      if(cycleList.contains(tid)) {  // get back to the start point of the cycle
+        _cycleList = new ArrayList<>(cycleList);
+        return;
+      }
+      cycleList.add(tid);
+      dfs(tid, cycleList);
+      cycleList.remove(tid);
     }
   }
 
