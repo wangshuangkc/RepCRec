@@ -5,127 +5,214 @@ import java.util.*;
  * @author Shuang on 11/29/16.
  */
 public class TransactionManager {
-  private int _timestamp = 0;
-  private Map<Integer, Transaction> _transactions = new HashMap<>();
-  private List<Integer> _waitingList = new ArrayList<>();
-  private List<Integer> _abortList = new ArrayList<>();
-  private List<Site> _runningSites;
-  private Map<Integer, List<Integer> > _waitForGraph;
-  private List<Integer> _cycleList;
-
+  private Map<String, Transaction> _transactions = new HashMap<>();
+  private List<String> _waitingList = new ArrayList<>();
+  private List<String> _abortList = new ArrayList<>();
+  private final DBSystem _dbs;
+  private Map<String, List<String> > _waitForGraph = new HashMap<>();
 
   public TransactionManager (DBSystem dbs) {
-    _runningSites = dbs._sites;
+    _dbs = dbs;
   }
 
   /**
-   * Begin a Read-Write transaction, setting the id, start time
+   * Begin a transaction, setting the id, start time, and if Read-Only
    * @param tid the id of the transaction
+   *
+   * @author Shuang
    */
-  public void begin(int tid) {
-    Transaction t= new Transaction(tid, _timestamp++, false);
+  public void begin(String tid, int timestamp, boolean readOnly) {
+    Transaction t= new Transaction(tid, timestamp, readOnly);
     if (_transactions.containsKey(tid)) {
-      System.out.println("Error: the transaction T" + tid + " has already begun.");
-      return;
-    }
-    _transactions.put(tid, t);
-  }
-
-  /**
-   * Begin a Read-Only transaction, setting the id, start time
-   * @param tid the id of the transaction
-   */
-  public void beginRO(int tid) {
-    Transaction t = new Transaction(tid, _timestamp++, true);
-    if (_transactions.containsKey(tid)) {
-      System.out.println("Error: the transaction T" + tid + " has already begun.");
+      System.out.println("Error: " + tid + " has already begun.");
       return;
     }
 
     _transactions.put(tid, t);
   }
 
-  public boolean read(int tid, int vid) {
+  /**
+   * Transaction attempts to read variable
+   * Won't read when the transaction is missing, aborted, or waiting.
+   *
+   * @param tid transaction id
+   * @param vid variable id
+   *
+   * @author Shuang
+   */
+  public void read(String tid, String vid) {
     if (_abortList.contains(tid)) {
-      System.out.println("Error: cannot read X" + vid + " because T" + tid  + " is borted.");
-      return false;
+      System.out.println("Error: cannot read " + vid + " because " + tid  + " is aborted.");
+      return;
+    }
+
+    if (_waitingList.contains(tid)) {
+      System.out.println("Error: cannot read " + vid + " because " + tid  + " is waiting.");
+      return;
     }
 
     Transaction t = _transactions.get(tid);
     if (t == null) {
-      System.out.println("Error: T" + tid + " did not begin.");
-      return false;
+      System.out.println("Error: " + tid + " did not begin.");
+
+      return;
+    }
+
+    Site site = selectSite(vid.charAt(1));
+    if (site == null) {
+      Operation op = new Operation(OperationType.R, vid);
+      t.addOperation(op);
+      _waitingList.add(tid);
+
+      return;
     }
 
     if (t._readOnly) {
-      int value = getValue(vid);
+      int value = site.getVariable(vid).readOnly(t._startTimestamp);
+      System.out.println(tid + " reads " + vid + " on Site" + site._sid + ": " + value);
+
+      return;
     }
-    return false;
-  }
 
-  private int getValue(int vid) {
-    return 0;
-  }
-
-  /**
-   * Remove failed site from the accessible site list
-   * @param site failed site
-   */
-  public void failSite(Site site) {
-    _runningSites.remove(site);
-  }
-
-  /**
-   * Add the recovered site to the accessible site list
-   * @param site recoved site
-   */
-  public void recoverSite(Site site) {
-    _runningSites.add(site);
-  }
-
-  // DeadLock detect when transaction need to be added into wait list, by Yuchang
-  public void detectDeadLock(Transaction t) {
-    if(_waitingList.contains(t)) {
-      System.out.println("Dead Lock Detected!");
-      // find the transaction in wait list which timestamp is smallest
-      getCycle(t._id);
-      Transaction abortOne = t;
-      int ts = 0;
-      for(int id: _cycleList) {
-        if(_transactions.get(id)._startTimestamp > ts) {
-          ts = _transactions.get(id)._startTimestamp;
-          abortOne =  _transactions.get(id);
+    List<Lock> locks = site._lockTable.get(vid);
+    if (locks.isEmpty()) {
+      locks.add(new Lock(LockType.RL, tid, vid));
+      int value = site.getVariable(vid).read();
+      System.out.println(tid + " reads " + vid + " on Site" + site._sid + ": " + value);
+    } else {
+      boolean canRead = true;
+      List<String> waited = new ArrayList<>();
+      List<Integer> offsets = new ArrayList<>();
+      for (Lock l : locks) {
+        if ((canRead || waited.isEmpty()) && l._transactionId.equals(tid)) {
+          int value = site.getVariable(vid).read();
+          System.out.println(tid + " reads " + vid + " on Site" + site._sid + ": " + value);
+        } else if (l._type == LockType.RL) {
+          waited.add(l._transactionId);
+          if (!canRead) {
+            List<String> tmp = new ArrayList<>();
+            for (int i : offsets) {
+              tmp.add(waited.get(i));
+            }
+            _waitForGraph.put(l._transactionId, tmp);
+          }
+        } else {
+          _waitForGraph.put(l._transactionId, waited);
+          waited.add(l._transactionId);
+          offsets.add(waited.size() - 1);
+          canRead = false;
         }
       }
-      abortTransaction(abortOne);
-      _cycleList.clear(); //reset _cycleList
-    }
-  }
-
-  private void getCycle(int start) {
-    List<Integer> cycleList = new ArrayList<>();
-    dfs(start, cycleList);
-  }
-
-  private void dfs(int current, List<Integer> cycleList) {
-    if(_waitForGraph.size() == 0 && !_waitForGraph.containsKey(current)) return;
-    for(int tid: _waitForGraph.get(current)) {
-      if(cycleList.contains(tid)) {  // get back to the start point of the cycle
-        _cycleList = new ArrayList<>(cycleList);
-        return;
+      if (canRead) {
+        locks.add(new Lock(LockType.RL, tid, vid));
+        int value = site.getVariable(vid).read();
+        System.out.println(tid + " reads " + vid + " on Site" + site._sid + ": " + value);
+      } else {
+        locks.add(new Lock(LockType.RL, tid, vid));
+        Operation op = new Operation(OperationType.R, vid);
+        t.addOperation(op);
+        _waitingList.add(tid);
       }
-      cycleList.add(tid);
-      dfs(tid, cycleList);
-      cycleList.remove(tid);
     }
   }
 
-  // absort transaction which is youngest, by Yuchang
-  public void abortTransaction(Transaction abortOne) {
-    for(Site site: _runningSites) {
+  private Site selectSite(int vid) {
+    if (vid % 2 == 1) {
+      int sid = 1 + vid % _dbs._sites.size();
+      Site s = _dbs._sites.get(sid);
+      if (s.isFailed()) {
+        System.out.println("Site" + sid + " has failed.");
+        return null;
+      }
+      return s;
+    }
+
+    for (Site s : _dbs._sites) {
+      if (!s.isFailed()) {
+        return s;
+      }
+    }
+
+    System.out.println("All sites have failed.");
+    return null;
+  }
+
+  /**
+   * DeadLock detect when transaction need to be added into wait list
+   * Run the detector when Ti is going to be added to the wailist while it is already in
+   * @param tran given transaction id
+   * @author Yuchang
+   */
+  public void detectDeadLock(Transaction tran) {
+    String tid = tran._tid;
+    List<String> cycle = new ArrayList<>();
+    if (!_waitingList.contains(tid)) {
+      _waitingList.add(tid);
+    } else {
+      System.out.println("Dead Lock detected!");
+      cycle = getCycle(tid);
+      Transaction aborted = tran;
+      int ts = -1;
+      for (String id : cycle) {
+        Transaction t = _transactions.get(id);
+        if (t._startTimestamp > ts) {
+          ts = t._startTimestamp;
+          aborted = t;
+        }
+      }
+      System.out.println("Abort " + aborted._tid + ".");
+      abortTransaction(aborted);
+    }
+  }
+
+  private List<String> getCycle(String start) {
+    List<String> cycle = new ArrayList<>();
+    dfs(start, cycle);
+    
+    return cycle;
+  }
+
+  private void dfs(String current, List<String> cycle) {
+    if (_waitForGraph.size() == 0 || !_waitForGraph.containsKey(current)) {
+      return;
+    }
+    
+    for (String tid : _waitForGraph.get(current)) {
+      if (!cycle.contains(tid)) {
+        cycle.add(tid);
+        dfs(tid, cycle);
+        cycle.remove(tid);
+      }
+    }
+  }
+
+  private void abortTransaction(Transaction abortOne) {
+    for(Site site: _dbs._sites) {
       site.releaseLocks(abortOne);
     }
-    //remove t from wait list
+
     _waitingList.remove(abortOne);
+  }
+
+  public static void main(String[] args) {
+    System.out.println("Test deadlock detecthion");
+    DBSystem dbs = new DBSystem();
+    TransactionManager tm = new TransactionManager(dbs);
+    tm._transactions.put("T1", new Transaction("T1", 1, false));
+    tm._transactions.put("T1", new Transaction("T2", 2, false));
+    tm._transactions.put("T1", new Transaction("T3", 3, false));
+    tm._waitingList.add("T1");
+    tm._waitingList.add("T2");
+    tm._waitingList.add("T3");
+    List<String> l1 = new ArrayList<>();
+    l1.add("T3");
+    tm._waitForGraph.put("T1", l1);
+    List<String> l2 = new ArrayList<>();
+    l2.add("T1");
+    tm._waitForGraph.put("T2", l2);
+    List<String> l3 = new ArrayList<>();
+    l3.add("T2");
+    tm._waitForGraph.put("T3", l3);
+    tm.detectDeadLock(tm._transactions.get("T1"));
   }
 }

@@ -7,6 +7,7 @@ import java.util.List;
 public class DBSystem {
   private static final int NUM_SITE = 10;
   private static final int NUM_VARIABLE = 20;
+  private int _timestamp = 0;
   final List<Site> _sites;
   final TransactionManager _tm = new TransactionManager(this);
 
@@ -17,7 +18,6 @@ public class DBSystem {
   public void failSite(int sid) {
     Site s = _sites.get(sid);
     s.fail();
-    _tm.failSite(s);
   }
 
 
@@ -27,7 +27,7 @@ public class DBSystem {
     List<Site> sites = new ArrayList<>();
     for (int i = 1;  i <= NUM_SITE; i++) {
       Site s = new Site(i);
-      for (int j = 2; j <= variables.size(); j += 2) {
+      for (int j = 1; j < variables.size(); j += 2) {
         s.addVariable(variables.get(j));
       }
       sites.add(s);
@@ -35,7 +35,7 @@ public class DBSystem {
 
     for (int i = 1; i <= variables.size(); i += 2) {
       int sid = 1 + i % NUM_SITE;
-      sites.get(sid).addVariable(variables.get(i));
+      sites.get(sid - 1).addVariable(variables.get(i - 1));
     }
 
     return sites;

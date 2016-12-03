@@ -7,14 +7,14 @@ import java.util.Queue;
  * @author Shuang on 11/29/16.
  */
 public class Transaction {
-  public final int _id;
+  public final String _tid;
   public final int _startTimestamp;
   public final boolean _readOnly;
   public final Queue<Operation> _pendingOperations;
   private int _endTimeStamp;
 
-  public Transaction(int id, int timestamp, boolean readOnly) {
-    _id = id;
+  public Transaction(String id, int timestamp, boolean readOnly) {
+    _tid = id;
     _startTimestamp = timestamp;
     _readOnly = readOnly;
     _pendingOperations = new LinkedList<>();

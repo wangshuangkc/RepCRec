@@ -7,14 +7,14 @@ import java.util.Objects;
  */
 public class Lock {
   public final LockType _type;
-  public final int _transactionId;
-  public final int _variableId;
+  public final String _transactionId;
+  public final String _variableId;
   private boolean shared;
 
-  public Lock(LockType type, int transaction, int variable) {
+  public Lock(LockType type, String transactionId, String variableId) {
     _type = type;
-    _transactionId = transaction;
-    _variableId = variable;
+    _transactionId = transactionId;
+    _variableId = variableId;
     shared = _type == LockType.RL;
   }
 
