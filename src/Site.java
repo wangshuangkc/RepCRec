@@ -8,11 +8,10 @@ import java.util.Map;
  * @author Shuang on 11/29/16.
  */
 public class Site {
-  private final int _sid;
+  public final int _sid;
+  public final Map<String, List<Lock>> _lockTable = new HashMap<>();
+  private Map<String, Variable> _variables = new HashMap<>();
   private boolean _failed = false;
-  private Map<String, Boolean> _canReads;
-  private Map<String, Variable> _variables;
-  private Map<String, List<Lock>> _lockTable = new HashMap<String, List<Lock>>();
 
   public Site(int id) {
     _sid = id;
@@ -20,6 +19,8 @@ public class Site {
 
   /**
    * Fail the site for test purpose, and the site is no longer accessible
+   *
+   * @author Shuang
    */
   public void fail() {
     _failed = true;
@@ -28,14 +29,14 @@ public class Site {
 
   /**
    * Recover the site, and the site is accessible
+   *
+   * @author Shuang
    */
   public void recover() {
     _failed = false;
-    updateData();
-  }
-
-  private void updateData() {
-    //todo catch up with variable data from other site
+    for (Map.Entry<String, Variable> e : _variables.entrySet()) {
+      e.getValue().blockRead();
+    }
   }
 
   /**
@@ -54,6 +55,15 @@ public class Site {
     if (!_variables.containsKey(variable)) {
       _variables.put(variable._vid, variable);
     }
+  }
+
+  /**
+   * Get the variable by id
+   * @param vid variable id
+   * @return requested variable or null if id not exists
+   */
+  public Variable getVariable(String vid) {
+    return _variables.get(vid);
   }
 
   /**
@@ -80,7 +90,7 @@ public class Site {
   public void releaseLocks(Transaction t) {
     for(String var: _lockTable.keySet()) {
       for(Lock lock: _lockTable.get(var)) {
-        if(lock._transactionId == t._id) {
+        if(lock._transactionId.equals(t._tid)) {
           _lockTable.get(var).remove(lock);
         }
       }

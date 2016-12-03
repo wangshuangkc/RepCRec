@@ -10,18 +10,36 @@ public class Variable {
   public final String _vid;
   private int _value;
   private Lock _lock = null;
+  private int _lastCommitted;
   private Map<Integer, Integer> _commits = new HashMap<>();
+  private boolean _canRead = true;
 
   public Variable(String id) {
     _vid = id;
-    _value = 10 * _vid.charAt(1);
+    _value = getInitValue(id);
     _commits.put(0, _value);
+    _lastCommitted = _value;
+  }
+
+  private int getInitValue(String vid) {
+    String s = vid.replace("x", "");
+    try {
+      int i = Integer.valueOf(s);
+      return 10 * i;
+    } catch (NumberFormatException e) {
+      System.out.println("Error: invalid variable name " + vid
+          + ". Expected example: x1");
+      e.printStackTrace();
+    }
+
+    return -1;
   }
 
   /**
    * Read the value
    * May need to check the lock first
    * @return the value of the variable
+   *
    * @author Shuang on 11/29/16
    */
   public int read() {
@@ -31,13 +49,11 @@ public class Variable {
   /**
    * Read the last committed value before the given timestamp, for Read-Only transaction
    * @param timestamp the given transaction timestamp
-   * @return last committed value
-   * @throws IllegalArgumentException when the timestamp is earlier than 0
+   * @return last committed value before the timestamp
+   *
+   * @author Shuang
    */
   public int readOnly(int timestamp) {
-    if (timestamp <= 0) {
-      throw new IllegalArgumentException("Invalid timestamp: " + timestamp);
-    }
     List<Integer> timestamps = new ArrayList<>(_commits.keySet());
     int size = timestamps.size();
     if (timestamp > timestamps.get(size - 1)) {
@@ -63,6 +79,8 @@ public class Variable {
    * Write the value
    * @param value the copy value
    * @return the current value
+   *
+   * @author Shuang
    */
   public int write(int value) {
     _value = value;
@@ -73,9 +91,12 @@ public class Variable {
   /**
    * Commit the current value
    * @return the last committed/current value
+   *
+   * @author Shuang
    */
   public int commit(int timestamp) {
     _commits.put(timestamp, _value);
+    _lastCommitted = _value;
 
     return _value;
   }
@@ -83,6 +104,8 @@ public class Variable {
   /**
    * Lock the variable
    * @param lock Read or Write lock
+   *
+   * @author Shuang
    */
   public boolean lock(Lock lock) {
     if (_lock == null) {
@@ -91,5 +114,34 @@ public class Variable {
     }
 
     return _lock.canShare(lock);
+  }
+
+  /**
+   * Return the last committed value before the present
+   * @return the last committed value
+   *
+   * @author Shuang
+   */
+  public int readLastCommited() {
+    return _lastCommitted;
+  }
+
+  /**
+   * Block the variable to be read for Site recovery period
+   *
+   * @author Shuang
+   */
+  public void blockRead() {
+    _canRead = false;
+  }
+
+  /**
+   * Check if the variable can be read for Site recovery period
+   * @return true if the variable is allowed to read, false otherwise
+   *
+   * @author Shuang
+   */
+  public boolean canRead() {
+    return _canRead;
   }
 }
