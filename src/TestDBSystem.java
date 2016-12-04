@@ -1,3 +1,4 @@
+import java.io.IOException;
 import java.util.Map;
 
 /**
@@ -10,6 +11,11 @@ public class TestDBSystem {
     test.dump();
   }
 
+  public static void testInput() throws IOException{
+    System.out.println("Test Input");
+    DBSystem test = new DBSystem();
+    test.readInputFile("test1.txt");
+  }
   public static void testDump() {
     System.out.println("Test Constructor");
     DBSystem test = new DBSystem();
@@ -21,7 +27,9 @@ public class TestDBSystem {
     }
     test.dump();
   }
-  public static void main(String[] args) {
+  public static void main(String[] args) throws IOException {
     testConstructor();
+    testDump();
+    testInput();
   }
 }

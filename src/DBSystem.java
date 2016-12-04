@@ -76,8 +76,9 @@ public class DBSystem {
   }
 
   private void runDB() {
-    for(String ope: operations) {
+    for(String op: operations) {
       //parse the String operation
+      String ope = op.replaceAll("\\s+", "");
       if(ope.contains("begin")) {
         String tid = ope.substring(ope.indexOf("(")+1, ope.indexOf(")"));
         System.out.println("begin transaction id is " + tid);
@@ -88,18 +89,20 @@ public class DBSystem {
         int split = ope.indexOf(",");
         String tid = ope.substring(ope.indexOf("(")+1, split);
         String vid = ope.substring(split+1, ope.indexOf(")"));
-        System.out.println("read transaction id is " + tid);
-        System.out.println("read variable id is " + tid);
         _tm.read(tid, vid);
+        System.out.println("read transaction id is " + tid);
+        System.out.println("read variable id is " + vid);
       } else if(ope.contains("W")) {
         int first = ope.indexOf(",");
-        String tid = ope.substring(ope.indexOf("(")+1, first);
-        int second = ope.indexOf(",", first);
+        String tid = ope.substring(ope.indexOf("(")+1, first + 1);
+        int second = ope.indexOf(",", first + 1);
         String vid = ope.substring(first+1, second);
         int val = Integer.parseInt(ope.substring(second+1, ope.indexOf(")")));
         _tm.write(tid, vid, val);
+        System.out.println("write transaction id is " + tid);
+        System.out.println("write variable " + vid + " with value " + val);
       } else if(ope.contains("dump")) {
-        //_tm.dump(...)
+        //_tm.dump()
       } else if(ope.contains("fail")) {
         int sid = Integer.parseInt(ope.substring(ope.indexOf("(")+1, ope.indexOf(")")));
         failSite(sid);

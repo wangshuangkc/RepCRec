@@ -25,6 +25,7 @@ public class Site {
   public void fail() {
     _failed = true;
     _lockTable.clear();
+    System.out.println("Site" + _sid + " failed");
   }
 
   /**
@@ -41,6 +42,7 @@ public class Site {
         e.getValue().blockRead();
       }
     }
+    System.out.println("Site" + _sid + " recovered");
   }
 
   /**
@@ -129,6 +131,7 @@ public class Site {
   /**
    * write var on every site it stored
    * @param vid variable id, val value to write
+   * @param val written value
    *
    * @author Yuchang
    */
@@ -153,6 +156,7 @@ public class Site {
       for(Lock lock: _lockTable.get(var)) {
         if(lock._transactionId.equals(t._tid)) {
           _lockTable.get(var).remove(lock);
+          break;
         }
       }
     }
