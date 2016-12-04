@@ -8,8 +8,8 @@ import java.util.Map;
  * @author Shuang on 11/29/16.
  */
 public class Site {
-  public final int _sid;
-  public final Map<String, List<Lock>> _lockTable = new HashMap<>();
+  final int _sid;
+  final Map<String, List<Lock>> _lockTable = new HashMap<>();
   Map<String, Variable> _variables = new HashMap<>();
   private boolean _failed = false;
 

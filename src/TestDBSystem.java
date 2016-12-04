@@ -7,16 +7,22 @@ public class TestDBSystem {
   public static void testConstructor() {
     System.out.println("Test Constructor");
     DBSystem test = new DBSystem();
-    for (Site s : test._sites) {
-      System.out.println("site " + s._sid + ": ");
-      for (Map.Entry<String, Variable> e : s._variables.entrySet()) {
-        System.out.println(e.getValue()._vid + ": " + e.getValue().readLastCommited());
-      }
-      System.out.println();
-    }
+    test.dump();
   }
 
+  public static void testDump() {
+    System.out.println("Test Constructor");
+    DBSystem test = new DBSystem();
+    for (int i = 2; i <= test.NUM_SITE; i += 2) {
+      String testVid = "x" + i;
+      Variable v = test._sites.get(i - 1).getVariable(testVid);
+      v.write(i);
+      v.commit(i);
+    }
+    test.dump();
+  }
   public static void main(String[] args) {
     testConstructor();
+    //testDump();
   }
 }

@@ -146,9 +146,32 @@ public class DBSystem {
         int sid = 1 + i % NUM_SITE;
         Site s = _sites.get(sid - 1);
         int value = s.getVariable(vid).readLastCommited();
-        String out = vid + ": " + value + " at site " + sid + "\n";
+        String out = vid + ": " + value + " at site " + sid + "|\n";
         sb.append(out);
+      } else {
+        for (Site s : _sites) {
+          int value = s.getVariable(vid).readLastCommited();
+          if (!values.containsKey(value)) {
+            values.put(value, new ArrayList<Integer>());
+          }
+          List<Integer> siteOfValue = values.get(value);
+          siteOfValue.add(s._sid);
+        }
+        sb.append(vid + ": ");
+        for (int v : values.keySet()) {
+          if (values.size() == 1) {
+            sb.append(v + " at all sites");
+          } else {
+            sb.append(v + " at site ");
+            for (int s : values.get(v)) {
+              sb.append(s + " ");
+            }
+          }
+          sb.append("| ");
+        }
+        sb.append("\n");
       }
     }
+    System.out.println(sb.toString());
   }
 }
