@@ -58,7 +58,7 @@ public class TransactionManager {
       return;
     }
 
-    Site site = selectSite(Integer.parseInt(vid.substring(1)));
+    Site site = selectSite(vid);
     if (site == null) {
       Operation op = new Operation(OperationType.R, vid);
       t.addOperation(op);
@@ -84,9 +84,10 @@ public class TransactionManager {
     }
   }
 
-  private Site selectSite(int vid) {
-    if (vid % 2 == 1) {
-      int sid = 1 + vid % _dbs._sites.size();
+  private Site selectSite(String vid) {
+    int vIdx = Integer.parseInt(vid.substring(1));
+    if (vIdx % 2 == 1) {
+      int sid = 1 + vIdx % _dbs.NUM_SITE;
       Site s = _dbs._sites.get(sid);
       if (s.isFailed()) {
         System.out.println("Site" + sid + " has failed.");
@@ -96,7 +97,7 @@ public class TransactionManager {
     }
 
     for (Site s : _dbs._sites) {
-      if (!s.isFailed()) {
+      if (!s.isFailed() && s.getVariable(vid).canRead()) {
         return s;
       }
     }
@@ -129,14 +130,6 @@ public class TransactionManager {
     if (t == null) {
       System.out.println("Error: " + tid + " did not begin.");
 
-      return;
-    }
-
-    Site site = selectSite(Integer.parseInt(vid.substring(1)));
-    if (site == null) {
-      Operation op = new Operation(OperationType.W, vid, val);
-      t.addOperation(op);
-      _waitingList.add(tid);
       return;
     }
 
