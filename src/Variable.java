@@ -9,7 +9,6 @@ import java.util.*;
 public class Variable {
   public final String _vid;
   private int _value;
-  private Lock _lock = null;
   private int _lastCommitted;
   private Map<Integer, Integer> _commits = new HashMap<>();
   private boolean _canRead = true;
@@ -99,21 +98,6 @@ public class Variable {
     _lastCommitted = _value;
 
     return _value;
-  }
-
-  /**
-   * Lock the variable
-   * @param lock Read or Write lock
-   *
-   * @author Shuang
-   */
-  public boolean lock(Lock lock) {
-    if (_lock == null) {
-      _lock = lock;
-      return true;
-    }
-
-    return _lock.canShare(lock);
   }
 
   /**
