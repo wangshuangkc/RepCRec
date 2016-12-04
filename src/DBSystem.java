@@ -1,6 +1,8 @@
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.io.*;
+import java.util.Map;
 
 /**
  * Created by kc on 12/1/16.
@@ -133,5 +135,20 @@ public class DBSystem {
   public void recoverSite(int sid) {
     Site s = _sites.get(sid);
     s.recover();
+  }
+
+  public void dump() {
+    StringBuffer sb = new StringBuffer();
+    for (int i = 1; i <= NUM_VARIABLE; i++) {
+      Map<Integer, List<Integer>> values = new HashMap<>();
+      String vid = "x" + i;
+      if (i % 2 == 1) {
+        int sid = 1 + i % NUM_SITE;
+        Site s = _sites.get(sid - 1);
+        int value = s.getVariable(vid).readLastCommited();
+        String out = vid + ": " + value + " at site " + sid + "\n";
+        sb.append(out);
+      }
+    }
   }
 }
