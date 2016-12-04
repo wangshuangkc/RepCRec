@@ -15,6 +15,7 @@ public class TransactionManager {
     _dbs = dbs;
   }
 
+
   /**
    * Begin a transaction, setting the id, start time, and if Read-Only
    * @param tid the id of the transaction
@@ -249,6 +250,20 @@ public class TransactionManager {
         }
       }
     }
+  }
+
+  /**
+   * end operation
+   * end means commit the value of a variable
+   * @param tid given transaction id
+   * @author Yuchang
+   */
+  public void end(String tid, int timestamp) {
+    _transactions.get(tid).commit(timestamp);
+    for(Site s: _dbs._sites) {
+      s.commitValue(tid, timestamp);
+    }
+    abortTransaction(_transactions.get(tid));
   }
 
   public static void main(String[] args) {

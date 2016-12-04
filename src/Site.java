@@ -158,6 +158,22 @@ public class Site {
     }
   }
 
+  /**
+   * Commit the value a transaction modify when the transaction terminate
+   * @param tid commit transaction id
+   * @param timestamp the time when the transaction commit
+   * @author Yuchang
+   */
+  public void commitValue(String tid, int timestamp) {
+    for(String var: _lockTable.keySet()) {
+      for(Lock lock: _lockTable.get(var)) {
+        if(lock._transactionId.equals(tid)) {
+          _variables.get(var).commit(timestamp);
+        }
+      }
+    }
+  }
+
   @Override
   public boolean equals(Object ob) {
     if (ob == this) {
