@@ -1,5 +1,6 @@
 import java.util.ArrayList;
 import java.util.List;
+import java.io.*;
 
 /**
  * Created by kc on 12/1/16.
@@ -10,6 +11,7 @@ public class DBSystem {
   private int _timestamp = 0;
   final List<Site> _sites;
   final TransactionManager _tm = new TransactionManager(this);
+  public final List<String> operations = new ArrayList<>();
 
   public DBSystem() {
     _sites = setupSites();
@@ -45,6 +47,64 @@ public class DBSystem {
 
     return vars;
   }
+
+  /**
+   * Read operations from the input script
+   * @param fileName, input file name including path
+   *
+   * @author Yuchang
+   */
+  public void readInputFile(String fileName) throws IOException {
+    FileReader fileReader = new FileReader(fileName);
+    BufferedReader bufferedReader = new BufferedReader(fileReader);
+    String line = null;
+    while((line = bufferedReader.readLine()) != null) {
+      //System.out.println(line);
+      operations.add(line);
+    }
+    bufferedReader.close();
+    runDB();
+  }
+
+  private void runDB() {
+    for(String ope: operations) {
+      //parse the String operation
+      if(ope.contains("begin")) {
+        String tid = ope.substring(ope.indexOf("(")+1, ope.indexOf(")"));
+        System.out.println("begin transaction id is " + tid);
+        boolean readOnly = false;
+        if(ope.contains("beginRO")) readOnly = true;
+        _tm.begin(tid, _timestamp++, readOnly);
+      } else if(ope.contains("R")) {
+        int split = ope.indexOf(",");
+        String tid = ope.substring(ope.indexOf("(")+1, split);
+        String vid = ope.substring(split+1, ope.indexOf(")"));
+        System.out.println("read transaction id is " + tid);
+        System.out.println("read variable id is " + tid);
+        _tm.read(tid, vid);
+      } else if(ope.contains("W")) {
+        int first = ope.indexOf(",");
+        String tid = ope.substring(ope.indexOf("(")+1, first);
+        int second = ope.indexOf(",", first);
+        String vid = ope.substring(first+1, second);
+        int val = Integer.parseInt(ope.substring(second+1, ope.indexOf(")")));
+        _tm.write(tid, vid, val);
+      } else if(ope.contains("dump")) {
+        //_tm.dump(...)
+      } else if(ope.contains("fail")) {
+        int sid = Integer.parseInt(ope.substring(ope.indexOf("(")+1, ope.indexOf(")")));
+        failSite(sid);
+      } else if(ope.contains("recover")) {
+        int sid = Integer.parseInt(ope.substring(ope.indexOf("(")+1, ope.indexOf(")")));
+        recoverSite(sid);
+      } else if(ope.contains("end")) {
+        String tid = ope.substring(ope.indexOf("(")+1, ope.indexOf(")"));
+        _tm.end(tid, _timestamp);
+      }
+
+    }
+  }
+
 
   /**
    * Fail the site when get fail(sid) from the input
