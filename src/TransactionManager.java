@@ -89,7 +89,7 @@ public class TransactionManager {
     int vIdx = Integer.parseInt(vid.substring(1));
     if (vIdx % 2 == 1) {
       int sid = 1 + vIdx % _dbs.NUM_SITE;
-      Site s = _dbs._sites.get(sid);
+      Site s = _dbs._sites.get(sid - 1);
       if (s.isFailed()) {
         System.out.println("Site" + sid + " has failed.");
         return null;
