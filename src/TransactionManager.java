@@ -117,9 +117,10 @@ public class TransactionManager {
   }
 
   private Site selectSite(int vid) {
+    Site s = null;
     if (vid % 2 == 1) {
-      int sid = 1 + vid % _dbs._sites.size();
-      Site s = _dbs._sites.get(sid);
+      int sid = 1 + vid % _dbs.NUM_SITE;
+      s = _dbs._sites.get(sid - 1);
       if (s.isFailed()) {
         System.out.println("Site" + sid + " has failed.");
         return null;
@@ -127,14 +128,19 @@ public class TransactionManager {
       return s;
     }
 
-    for (Site s : _dbs._sites) {
-      if (!s.isFailed()) {
-        return s;
-      }
+    Random random = new Random();
+    int sidx = random.nextInt(_dbs.NUM_SITE);
+    int cnt = sidx + 1;
+    while (s == null && cnt != sidx) {
+      s = _dbs._sites.get(cnt);
+      cnt = (cnt + 1) % (_dbs.NUM_SITE - 1);
     }
 
-    System.out.println("All sites have failed.");
-    return null;
+    if (s == null) {
+      System.out.println("All sites have failed.");
+    }
+
+    return s;
   }
 
   /**
@@ -195,16 +201,17 @@ public class TransactionManager {
 
     //update the _waitForGraph, clear all t waiting for abort t, remove abort t from waitlist if any t has it, by Yuchang
     for(String tid: _waitForGraph.keySet()) {
-      if(tid == abortOne._tid) _waitForGraph.get(tid).clear();
+      if(tid.equals(abortOne._tid)) _waitForGraph.get(tid).clear();
       else {
         for (String child : _waitForGraph.get(tid)) {
-          if (child == abortOne._tid) _waitForGraph.get(tid).remove(child);
+          if (child.equals(abortOne._tid)) _waitForGraph.get(tid).remove(child);
         }
       }
     }
   }
 
   public static void main(String[] args) {
+    /*
     System.out.println("Test deadlock detection");
     DBSystem dbs = new DBSystem();
     TransactionManager tm = new TransactionManager(dbs);
@@ -224,5 +231,11 @@ public class TransactionManager {
     l3.add("T2");
     tm._waitForGraph.put("T3", l3);
     tm.detectDeadLock(tm._transactions.get("T1"));
+    */
+
+    Random random = new Random();
+    for (int i = 0; i < 20; i++) {
+      System.out.println(random.nextInt(10));
+    }
   }
 }
