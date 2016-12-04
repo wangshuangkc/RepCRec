@@ -35,13 +35,19 @@ public class Site {
   public void recover() {
     _failed = false;
     for (Map.Entry<String, Variable> e : _variables.entrySet()) {
-      e.getValue().blockRead();
+      String vid = e.getKey().substring(1);
+      int id = Integer.valueOf(vid);
+      if (id % 2 == 0) {
+        e.getValue().blockRead();
+      }
     }
   }
 
   /**
    * Check if the site is accessible
    * @return true if the site is down, false otherwise
+   *
+   * @author Shuang
    */
   public boolean isFailed() {
     return _failed;
@@ -50,6 +56,8 @@ public class Site {
   /**
    * Add a variable to the Site
    * @param variable id
+   *
+   * @author Shuang
    */
   public void addVariable(Variable variable) {
     if (!_variables.containsKey(variable)) {
@@ -61,6 +69,8 @@ public class Site {
    * Get the variable by id
    * @param vid variable id
    * @return requested variable or null if id not exists
+   *
+   * @author Shuang
    */
   public Variable getVariable(String vid) {
     return _variables.get(vid);
@@ -72,6 +82,8 @@ public class Site {
    * @param vid variable id
    * @return True if the variable does not hold any lock or the current lock can be shared with the new lock, false other wise
    * @throws IllegalArgumentException if the variable is not found in the site
+   *
+   * @author Shuang
    */
   public boolean RLockVariable(String tid, String vid, Map<String, List<String>> waitForGraph) {
     if (!_variables.containsKey(vid)) {
