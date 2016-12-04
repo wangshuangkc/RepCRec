@@ -74,45 +74,14 @@ public class TransactionManager {
       return;
     }
 
-    List<Lock> locks = site._lockTable.get(vid);
-    if (locks.isEmpty()) {
-      locks.add(new Lock(LockType.RL, tid, vid));
+    boolean canRead = site.RLockVariable(tid, vid, _waitForGraph);
+    if (canRead) {
       int value = site.getVariable(vid).read();
-      System.out.println(tid + " reads " + vid + " on Site" + site._sid + ": " + value);
+      System.out.println(tid + " reads " + vid + " on site " + site._sid + ": " + value);
     } else {
-      boolean canRead = true;
-      List<String> waited = new ArrayList<>();
-      List<Integer> offsets = new ArrayList<>();
-      for (Lock l : locks) {
-        if ((canRead || waited.isEmpty()) && l._transactionId.equals(tid)) {
-          int value = site.getVariable(vid).read();
-          System.out.println(tid + " reads " + vid + " on Site" + site._sid + ": " + value);
-        } else if (l._type == LockType.RL) {
-          waited.add(l._transactionId);
-          if (!canRead) {
-            List<String> tmp = new ArrayList<>();
-            for (int i : offsets) {
-              tmp.add(waited.get(i));
-            }
-            _waitForGraph.put(l._transactionId, tmp);
-          }
-        } else {
-          _waitForGraph.put(l._transactionId, waited);
-          waited.add(l._transactionId);
-          offsets.add(waited.size() - 1);
-          canRead = false;
-        }
-      }
-      if (canRead) {
-        locks.add(new Lock(LockType.RL, tid, vid));
-        int value = site.getVariable(vid).read();
-        System.out.println(tid + " reads " + vid + " on Site" + site._sid + ": " + value);
-      } else {
-        locks.add(new Lock(LockType.RL, tid, vid));
-        Operation op = new Operation(OperationType.R, vid);
-        t.addOperation(op);
-        _waitingList.add(tid);
-      }
+      Operation op = new Operation(OperationType.R, vid);
+      t.addOperation(op);
+      _waitingList.add(tid);
     }
   }
 

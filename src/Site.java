@@ -68,25 +68,58 @@ public class Site {
 
   /**
    * Add a new lock to the variable
-   * @param lock
-   * @param variable id
-   * @return true if the variable does not hold any lock or the current lock can be shared with the new lock, false other wise
+   * @param tid the transaction id
+   * @param vid variable id
+   * @return True if the variable does not hold any lock or the current lock can be shared with the new lock, false other wise
    * @throws IllegalArgumentException if the variable is not found in the site
    */
-  public boolean lockVariable(Lock lock, String variable) {
-    if (!_variables.containsKey(variable)) {
-      throw new IllegalArgumentException("Error: variabld #" + variable + " not found in the Site #" + _sid);
+  public boolean RLockVariable(String tid, String vid, Map<String, List<String>> waitForGraph) {
+    if (!_variables.containsKey(vid)) {
+      throw new IllegalArgumentException("Error: " + vid + " not found in the site " + _sid);
     }
 
-    Variable var = _variables.get(variable);
-    List<Lock> locks = _lockTable.get(variable);
-    locks.add(lock);
-    _lockTable.put(variable, locks);
+    if (!_lockTable.containsKey(vid)) {
+      _lockTable.put(vid, new ArrayList<Lock>());
+    }
+    List<Lock> locks = _lockTable.get(vid);
+    if (locks.isEmpty()) {
+      locks.add(new Lock(LockType.RL, tid, vid));
+      return true;
+    } else {
+      boolean canRead = true;
+      List<String> waited = new ArrayList<>();
+      List<Integer> offsets = new ArrayList<>();
+      for (Lock l : locks) {
+        if ((canRead || waited.isEmpty()) && l._transactionId.equals(tid)) {
+          return canRead;
+        } else if (l._type == LockType.RL) {
+          waited.add(l._transactionId);
+          if (!canRead) {
+            List<String> tmp = new ArrayList<>();
+            for (int i : offsets) {
+              tmp.add(waited.get(i));
+            }
+            waitForGraph.put(l._transactionId, tmp);
+          }
+        } else {
+          waitForGraph.put(l._transactionId, waited);
+          waited.add(l._transactionId);
+          offsets.add(waited.size() - 1);
+          canRead = false;
+        }
+      }
+      locks.add(new Lock(LockType.RL, tid, vid));
 
-    return var.lock(lock);
+      return canRead;
+    }
   }
 
-  // release the locks from an absorted trasaction in this site when dead lock detected, by Yuchang
+  /**
+   * Release the locks from an absorted trasaction in this site when dead lock detected
+   * @param t aborted transaction
+   *
+   * @author Yuchang
+   */
   public void releaseLocks(Transaction t) {
     for(String var: _lockTable.keySet()) {
       for(Lock lock: _lockTable.get(var)) {
