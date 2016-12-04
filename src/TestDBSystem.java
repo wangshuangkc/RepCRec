@@ -23,6 +23,5 @@ public class TestDBSystem {
   }
   public static void main(String[] args) {
     testConstructor();
-    //testDump();
   }
 }

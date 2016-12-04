@@ -146,7 +146,7 @@ public class DBSystem {
         int sid = 1 + i % NUM_SITE;
         Site s = _sites.get(sid - 1);
         int value = s.getVariable(vid).readLastCommited();
-        String out = vid + ": " + value + " at site " + sid + "|\n";
+        String out = vid + ": " + value + " at site " + sid + "|git \n";
         sb.append(out);
       } else {
         for (Site s : _sites) {
