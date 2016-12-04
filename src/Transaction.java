@@ -10,14 +10,13 @@ public class Transaction {
   public final String _tid;
   public final int _startTimestamp;
   public final boolean _readOnly;
-  public final Queue<Operation> _pendingOperations;
+  public Operation _pendingOp = null;
   private int _endTimeStamp;
 
   public Transaction(String id, int timestamp, boolean readOnly) {
     _tid = id;
     _startTimestamp = timestamp;
     _readOnly = readOnly;
-    _pendingOperations = new LinkedList<>();
   }
 
   /**
@@ -33,6 +32,6 @@ public class Transaction {
    * @param op copy operation
    */
   public void addOperation(Operation op) {
-    _pendingOperations.add(op);
+    _pendingOp = op;
   }
 }

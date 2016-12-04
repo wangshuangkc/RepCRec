@@ -140,6 +140,11 @@ public class DBSystem {
     s.recover();
   }
 
+  /**
+   * Display all values of all copies of all at all sites
+   *
+   * @author Shuang
+   */
   public void dump() {
     StringBuffer sb = new StringBuffer();
     for (int i = 1; i <= NUM_VARIABLE; i++) {
@@ -176,5 +181,13 @@ public class DBSystem {
       }
     }
     System.out.println(sb.toString());
+  }
+
+  public void dump(int sid) {
+    StringBuffer sb = new StringBuffer();
+    Site s = _sites.get(sid - 1);
+    for (int i = 1; i <= NUM_VARIABLE; i++) {
+      String vid = "x" + i;
+    }
   }
 }
