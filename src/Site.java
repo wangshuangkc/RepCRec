@@ -127,6 +127,22 @@ public class Site {
   }
 
   /**
+   * write var on every site it stored
+   * @param vid variable id, val value to write
+   *
+   * @author Yuchang
+   */
+  public void writeOnSite(String vid, int val) {
+    if(!_variables.containsKey(vid)) {
+      throw new IllegalArgumentException("Error: " + vid + " not found in the site " + _sid);
+    }
+    Variable var = _variables.get(vid);
+    var.write(val);
+    _variables.put(vid, var);
+  }
+
+
+  /**
    * Release the locks from an absorted trasaction in this site when dead lock detected
    * @param t aborted transaction
    *

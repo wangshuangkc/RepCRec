@@ -58,12 +58,11 @@ public class TransactionManager {
       return;
     }
 
-    Site site = selectSite(vid.charAt(1));
+    Site site = selectSite(Integer.parseInt(vid.substring(1)));
     if (site == null) {
       Operation op = new Operation(OperationType.R, vid);
       t.addOperation(op);
       _waitingList.add(tid);
-
       return;
     }
 
@@ -116,10 +115,73 @@ public class TransactionManager {
    * @author Yuchang
    */
   public void write(String tid, String vid, int val) {
+    if (_abortList.contains(tid)) {
+      System.out.println("Error: cannot write " + vid + " because " + tid  + " is aborted.");
+      return;
+    }
 
+    if (_waitingList.contains(tid)) {
+      System.out.println("Error: cannot write " + vid + " because " + tid  + " is waiting.");
+      return;
+    }
+
+    Transaction t = _transactions.get(tid);
+    if (t == null) {
+      System.out.println("Error: " + tid + " did not begin.");
+
+      return;
+    }
+
+    Site site = selectSite(Integer.parseInt(vid.substring(1)));
+    if (site == null) {
+      Operation op = new Operation(OperationType.W, vid, val);
+      t.addOperation(op);
+      _waitingList.add(tid);
+      return;
+    }
+
+    if(canWrite(tid, vid)) {
+      //write on all sites
+      for(Site s: _dbs._sites) {
+        if(s.getVariable(vid) == null) continue;
+        s.writeOnSite(vid, val);
+      }
+    } else {
+      Operation op = new Operation(OperationType.W, vid, val);
+      t.addOperation(op);
+      _waitingList.add(tid);
+    }
   }
 
-
+  private boolean canWrite(String tid, String vid) {
+    boolean res = true;
+    int numOfSites = _dbs._sites.size(), count = 0;
+    for(Site s: _dbs._sites) {
+      if(s.isFailed() || s.getVariable(vid)==null) {
+        count++;
+        continue;
+      }
+      if(s._lockTable.containsKey(vid)) {
+        Lock lock = s._lockTable.get(vid).get(0);  // current lock for vid
+        // if current lock for vid is not tid, it's lock by other, cannot write
+        if(!lock._transactionId.equals(tid)) {
+          res = false;           //should return false
+          s._lockTable.get(vid).add(new Lock(LockType.WL, tid, vid));
+        } else {
+          if(lock._type.equals(LockType.RL)) {
+            s._lockTable.get(vid).remove(lock);           // the first lock is by tid, but is read lock, remove it
+            s._lockTable.get(vid).add(0, new Lock(LockType.WL, tid, vid));  // replace the read lock with write lock
+          }
+        }
+      } else {
+        List<Lock> locks = new ArrayList<>();
+        locks.add(new Lock(LockType.WL, tid, vid));     //vid is not locked, add it a write lock
+        s._lockTable.put(vid, locks);
+      }
+    }
+    if(count == numOfSites) res = false; //all the sites fail or no working sites has var
+    return res;
+  }
 
 
   /**
