@@ -107,6 +107,22 @@ public class TransactionManager {
   }
 
   /**
+   * Transaction attempts to write variable
+   * Won't write when the transaction is missing, aborted, or waiting.
+   *
+   * @param tid transaction id
+   * @param vid variable id
+   *
+   * @author Yuchang
+   */
+  public void write(String tid, String vid, int val) {
+
+  }
+
+
+
+
+  /**
    * DeadLock detect when transaction need to be added into wait list
    * Run the detector when Ti is going to be added to the wailist while it is already in
    * @param tran given transaction id
