@@ -249,7 +249,6 @@ public class TransactionManager {
    * end operation
    * end means commit the value of a variable
    * @param tid given transaction id
-   * @param  timestamp current time
    * @author Yuchang
    */
   public void end(String tid, int timestamp) {
