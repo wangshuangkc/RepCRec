@@ -15,12 +15,6 @@ public class DBSystem {
     _sites = setupSites();
   }
 
-  public void failSite(int sid) {
-    Site s = _sites.get(sid);
-    s.fail();
-  }
-
-
   private List<Site> setupSites() {
     List<Variable> variables = setupVariables();
 
@@ -50,5 +44,27 @@ public class DBSystem {
     }
 
     return vars;
+  }
+
+  /**
+   * Fail the site when get fail(sid) from the input
+   * @param sid
+   *
+   * @author Shuang
+   */
+  public void failSite(int sid) {
+    Site s = _sites.get(sid);
+    s.fail();
+  }
+
+  /**
+   * Recover the site when get recover(sid) from the input
+   * @param sid
+   *
+   * @author Shuang
+   */
+  public void recoverSite(int sid) {
+    Site s = _sites.get(sid);
+    s.recover();
   }
 }
