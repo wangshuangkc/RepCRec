@@ -78,6 +78,7 @@ public class DBSystem {
       //parse the String operation
       if(ope.contains("begin")) {
         String tid = ope.substring(ope.indexOf("(")+1, ope.indexOf(")"));
+        tid = tid.replaceAll("\\s+","");
         System.out.println("begin transaction id is " + tid);
         boolean readOnly = false;
         if(ope.contains("beginRO")) readOnly = true;
@@ -85,27 +86,37 @@ public class DBSystem {
       } else if(ope.contains("R")) {
         int split = ope.indexOf(",");
         String tid = ope.substring(ope.indexOf("(")+1, split);
+        tid = tid.replaceAll("\\s+","");
         String vid = ope.substring(split+1, ope.indexOf(")"));
-        System.out.println("read transaction id is " + tid);
-        System.out.println("read variable id is " + tid);
+        vid = vid.replaceAll("\\s+","");
         _tm.read(tid, vid);
+        System.out.println("read transaction id is " + tid);
+        System.out.println("read variable id is " + vid);
       } else if(ope.contains("W")) {
         int first = ope.indexOf(",");
         String tid = ope.substring(ope.indexOf("(")+1, first);
-        int second = ope.indexOf(",", first);
+        tid = tid.replaceAll("\\s+","");
+        int second = ope.indexOf(",", first+1);
         String vid = ope.substring(first+1, second);
-        int val = Integer.parseInt(ope.substring(second+1, ope.indexOf(")")));
+        vid = vid.replaceAll("\\s+","");
+        String num = ope.substring(second+1, ope.indexOf(")")).replace("\\s+","");
+        int val = Integer.valueOf(num);
         _tm.write(tid, vid, val);
+        System.out.println("write transaction id is " + tid);
+        System.out.println("write variable " + vid + " with value " + val);
       } else if(ope.contains("dump")) {
         //_tm.dump(...)
       } else if(ope.contains("fail")) {
-        int sid = Integer.parseInt(ope.substring(ope.indexOf("(")+1, ope.indexOf(")")));
+        String num = ope.substring(ope.indexOf("(")+1, ope.indexOf(")")).replace("\\s+","");
+        int sid = Integer.valueOf(num);
         failSite(sid);
       } else if(ope.contains("recover")) {
-        int sid = Integer.parseInt(ope.substring(ope.indexOf("(")+1, ope.indexOf(")")));
+        String num = ope.substring(ope.indexOf("(")+1, ope.indexOf(")")).replace("\\s+","");
+        int sid = Integer.valueOf(num);
         recoverSite(sid);
       } else if(ope.contains("end")) {
         String tid = ope.substring(ope.indexOf("(")+1, ope.indexOf(")"));
+        tid = tid.replaceAll("\\s+","");
         _tm.end(tid, _timestamp);
       }
 
