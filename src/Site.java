@@ -10,7 +10,7 @@ import java.util.Map;
 public class Site {
   public final int _sid;
   public final Map<String, List<Lock>> _lockTable = new HashMap<>();
-  private Map<String, Variable> _variables = new HashMap<>();
+  Map<String, Variable> _variables = new HashMap<>();
   private boolean _failed = false;
 
   public Site(int id) {

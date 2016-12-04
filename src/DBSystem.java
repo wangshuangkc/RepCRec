@@ -23,15 +23,18 @@ public class DBSystem {
     List<Site> sites = new ArrayList<>();
     for (int i = 1;  i <= NUM_SITE; i++) {
       Site s = new Site(i);
-      for (int j = 1; j < variables.size(); j += 2) {
-        s.addVariable(variables.get(j));
-      }
       sites.add(s);
     }
 
-    for (int i = 1; i <= variables.size(); i += 2) {
-      int sid = 1 + i % NUM_SITE;
-      sites.get(sid - 1).addVariable(variables.get(i - 1));
+    for (int i = 1; i <= variables.size(); i++) {
+      if (i % 2 == 1) {
+        int sid = 1 + i % NUM_SITE;
+        sites.get(sid - 1).addVariable(copyVariable(variables.get(i - 1)));
+      } else {
+        for (Site s : sites) {
+          s.addVariable(copyVariable(variables.get(i - 1)));
+        }
+      }
     }
 
     return sites;
@@ -46,6 +49,10 @@ public class DBSystem {
     }
 
     return vars;
+  }
+
+  private Variable copyVariable(Variable v) {
+    return new Variable(v._vid);
   }
 
   /**
