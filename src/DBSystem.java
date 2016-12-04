@@ -5,8 +5,8 @@ import java.util.List;
  * Created by kc on 12/1/16.
  */
 public class DBSystem {
-  private static final int NUM_SITE = 10;
-  private static final int NUM_VARIABLE = 20;
+  static final int NUM_SITE = 10;
+  static final int NUM_VARIABLE = 20;
   private int _timestamp = 0;
   final List<Site> _sites;
   final TransactionManager _tm = new TransactionManager(this);
