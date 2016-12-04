@@ -25,7 +25,7 @@ public class Site {
   public void fail() {
     _failed = true;
     _lockTable.clear();
-    System.out.println("Site" + _sid + " failed");
+    System.out.println("Site " + _sid + " failed");
   }
 
   /**
@@ -42,7 +42,7 @@ public class Site {
         e.getValue().blockRead();
       }
     }
-    System.out.println("Site" + _sid + " recovered");
+    System.out.println("Site " + _sid + " recovered");
   }
 
   /**

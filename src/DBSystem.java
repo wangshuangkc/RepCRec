@@ -142,7 +142,7 @@ public class DBSystem {
    * @author Shuang
    */
   public void recoverSite(int sid) {
-    Site s = _sites.get(sid);
+    Site s = _sites.get(sid - 1);
     s.recover();
   }
 }
