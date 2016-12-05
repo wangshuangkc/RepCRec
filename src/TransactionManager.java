@@ -236,13 +236,14 @@ public class TransactionManager {
 
     //update the _waitForGraph, clear all t waiting for abort t, remove abort t from waitlist if any t has it, by Yuchang
     for(String tid: _waitForGraph.keySet()) {
-      if(tid.equals(abortOne._tid)) _waitForGraph.get(tid).clear();
+      if(tid == abortOne._tid) _waitForGraph.remove(tid);
       else {
         for (String child : _waitForGraph.get(tid)) {
-          if (child.equals(abortOne._tid)) _waitForGraph.get(tid).remove(child);
+          if (child == abortOne._tid) _waitForGraph.get(tid).remove(child);
         }
       }
     }
+    runNextWaiting();
   }
 
   /**
@@ -258,6 +259,26 @@ public class TransactionManager {
       s.commitValue(tid, timestamp);
     }
     abortTransaction(_transactions.get(tid));
+  }
+
+  private void runNextWaiting() {
+    if(_waitingList.isEmpty()) {
+      System.out.println("There is no transaction waiting currently");
+      return;
+    }
+    for(String nextTid: _waitingList) {
+      if(_waitForGraph.containsKey(nextTid)) {
+        System.out.println("Transaction " + nextTid + " still need to wait!");
+        break;
+      }
+      String nextVid = _transactions.get(nextTid)._pendingOp._variableId;
+      if(_transactions.get(nextTid)._pendingOp._type == OperationType.R) {
+        read(nextTid, nextVid);
+      } else if(_transactions.get(nextTid)._pendingOp._type == OperationType.W) {
+        int nextVal = _transactions.get(nextTid)._pendingOp.readValue();
+        write(nextTid, nextVid, nextVal);
+      }
+    }
   }
 
   public static void main(String[] args) {

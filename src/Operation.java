@@ -34,6 +34,15 @@ public class Operation {
     _variableId = variable;
     _value = value;
   }
+
+  /**
+   * return parivate write operation value
+   * when re-execute the write operation in waiting list
+   * @author Yuchang
+   */
+  public int readValue() {
+    return _value;
+  }
 }
 
 enum OperationType {
