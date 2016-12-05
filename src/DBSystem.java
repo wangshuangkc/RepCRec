@@ -141,41 +141,10 @@ public class DBSystem {
    * @author Shuang
    */
   public void dump() {
-    StringBuffer sb = new StringBuffer();
     for (int i = 1; i <= NUM_VARIABLE; i++) {
-      Map<Integer, List<Integer>> values = new HashMap<>();
       String vid = "x" + i;
-      if (i % 2 == 1) {
-        int sid = 1 + i % NUM_SITE;
-        Site s = _sites.get(sid - 1);
-        int value = s.getVariable(vid).readLastCommited();
-        String out = vid + ": " + value + " at site " + sid + "|git \n";
-        sb.append(out);
-      } else {
-        for (Site s : _sites) {
-          int value = s.getVariable(vid).readLastCommited();
-          if (!values.containsKey(value)) {
-            values.put(value, new ArrayList<Integer>());
-          }
-          List<Integer> siteOfValue = values.get(value);
-          siteOfValue.add(s._sid);
-        }
-        sb.append(vid + ": ");
-        for (int v : values.keySet()) {
-          if (values.size() == 1) {
-            sb.append(v + " at all sites");
-          } else {
-            sb.append(v + " at site ");
-            for (int s : values.get(v)) {
-              sb.append(s + " ");
-            }
-          }
-          sb.append("| ");
-        }
-        sb.append("\n");
-      }
+      dump(vid);
     }
-    System.out.println(sb.toString());
   }
 
   /**
@@ -195,8 +164,42 @@ public class DBSystem {
     System.out.println(sb.toString());
   }
 
+  /**
+   * Print the commited values of all copies of the given variable at all sites
+   * @param vid the variable id
+   *
+   * @author Shuang
+   */
   public void dump(String vid) {
     int vidx = Integer.valueOf(vid.substring(1));
-
+    if (vidx % 2 == 1) {
+      int sid = 1 + vidx % NUM_SITE;
+      Site s = _sites.get(sid - 1);
+      int value = s.getVariable(vid).readLastCommited();
+      System.out.println(vid + ": " + value + " at site " + s._sid);
+    } else {
+      Map<Integer, List<Integer>> values = new HashMap<>();
+      for (Site s : _sites) {
+        int value = s.getVariable(vid).readLastCommited();
+        if (!values.containsKey(value)) {
+          values.put(value, new ArrayList<Integer>());
+        }
+        List<Integer> siteOfValue = values.get(value);
+        siteOfValue.add(s._sid);
+      }
+      StringBuffer sb;
+      for (int v : values.keySet()) {
+        if (values.size() == 1) {
+          System.out.println(vid + ": " + v + " at all sites");
+        } else {
+          sb = new StringBuffer(vid + ": ");
+          sb.append(v + " at site ");
+          for (int s : values.get(v)) {
+            sb.append(s + " ");
+          }
+          System.out.println(sb.toString().trim());
+        }
+      }
+    }
   }
 }
