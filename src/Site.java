@@ -10,7 +10,7 @@ import java.util.Map;
 public class Site {
   final int _sid;
   final Map<String, List<Lock>> _lockTable = new HashMap<>();
-  Map<String, Variable> _variables = new HashMap<>();
+  final Map<String, Variable> _variables = new HashMap<>();
   private boolean _failed = false;
 
   public Site(int id) {
@@ -176,6 +176,19 @@ public class Site {
         }
       }
     }
+  }
+
+  /**
+   * Get a list of variable ids stored in the site
+   * @return a sorted array of variable Id
+   *
+   * @author Shuang
+   */
+  public String[] getAllVariableIds() {
+    String[] vids = _variables.keySet().toArray(new String[_variables.keySet().size()]);
+    Arrays.sort(vids);
+
+    return vids;
   }
 
   @Override
