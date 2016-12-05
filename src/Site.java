@@ -129,6 +129,39 @@ public class Site {
   }
 
   /**
+   * Read the current value of the requested variable OR
+   * Read the committed value of the requested variable
+   * @param vid variable id
+   * @param committed if requesting committed value
+   * @return variable value
+   *
+   * @author Shuang
+   */
+  public int readVariable(String vid, boolean committed) {
+    Variable v = getVariable(vid);
+
+    if (committed) {
+      return v.readLastCommited();
+    }
+
+    return v.read();
+  }
+
+  /**
+   * Read the committed value of the requested variable before the timestamp
+   * @param vid variable id
+   * @param timestamp if requesting committed value
+   * @return the committed variable value
+   *
+   * @author Shuang
+   */
+  public int readVariable(String vid, int timestamp) {
+    Variable v = getVariable(vid);
+
+    return v.readOnly(timestamp);
+  }
+
+  /**
    * write var on every site it stored
    * @param vid variable id, val value to write
    * @param val written value
