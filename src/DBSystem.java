@@ -2,7 +2,9 @@ import java.util.*;
 import java.io.*;
 
 /**
- * Created by kc on 12/1/16.
+ * DBSystem object for storing sites, raise TM events, and display status
+ *
+ * @author Shuang
  */
 public class DBSystem {
   static final int NUM_SITE = 10;
@@ -10,7 +12,7 @@ public class DBSystem {
   private int _timestamp = 0;
   final List<Site> _sites;
   final TransactionManager _tm = new TransactionManager(this);
-  public final List<String> operations = new ArrayList<>();
+  final List<String> operations = new ArrayList<>();
 
   public DBSystem() {
     _sites = setupSites();
@@ -99,7 +101,15 @@ public class DBSystem {
         //System.out.println("write transaction " + tid);
         //System.out.println("write variable " + vid + " with value " + val);
       } else if(ope.contains("dump")) {
-        dump();
+        if (ope.contains("()")) {
+          dump();
+        } else if (ope.contains("x")) {
+          String vid = ope.substring(ope.indexOf("x") + 1, ope.indexOf(")"));
+          dump(vid);
+        } else {
+          String sid = ope.substring(ope.indexOf("(") + 1, ope.indexOf(")"));
+          dump(Integer.valueOf(sid));
+        }
       } else if(ope.contains("fail")) {
         int sid = Integer.parseInt(ope.substring(ope.indexOf("(")+1, ope.indexOf(")")));
         failSite(sid);
