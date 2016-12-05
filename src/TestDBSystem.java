@@ -10,10 +10,10 @@ public class TestDBSystem {
     test.dump();
   }
 
-  public static void testInput() throws IOException{
+  public static void testInput(int i) throws IOException{
     System.out.println("Test Input");
     DBSystem test = new DBSystem();
-    test.readInputFile("test.txt");
+    test.run("tests/test" + i + ".txt");
   }
 
   public static void testDump() {
@@ -39,7 +39,7 @@ public class TestDBSystem {
   public static void main(String[] args) throws IOException {
     //testConstructor();
     //testDump();
-    testInput();
+    testInput(2);
     //testDumpSite();
   }
 }

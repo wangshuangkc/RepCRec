@@ -1,0 +1,1455 @@
+Processing dump()
+Site number: 1
+Site status = ACTIVE
+Data item number          Committed Value
+    2                       20
+    4                       40
+    6                       60
+    8                       80
+   10                      100
+   12                      120
+   14                      140
+   16                      160
+   18                      180
+   20                      200
+
+
+Site number: 2
+Site status = ACTIVE
+Data item number          Committed Value
+    2                       20
+    4                       40
+    6                       60
+    8                       80
+   10                      100
+   12                      120
+   14                      140
+   16                      160
+   18                      180
+   20                      200
+    1                       10
+   11                      110
+
+
+Site number: 3
+Site status = ACTIVE
+Data item number          Committed Value
+    2                       20
+    4                       40
+    6                       60
+    8                       80
+   10                      100
+   12                      120
+   14                      140
+   16                      160
+   18                      180
+   20                      200
+
+
+Site number: 4
+Site status = ACTIVE
+Data item number          Committed Value
+    2                       20
+    4                       40
+    6                       60
+    8                       80
+   10                      100
+   12                      120
+   14                      140
+   16                      160
+   18                      180
+   20                      200
+    3                       30
+   13                      130
+
+
+Site number: 5
+Site status = ACTIVE
+Data item number          Committed Value
+    2                       20
+    4                       40
+    6                       60
+    8                       80
+   10                      100
+   12                      120
+   14                      140
+   16                      160
+   18                      180
+   20                      200
+
+
+Site number: 6
+Site status = ACTIVE
+Data item number          Committed Value
+    2                       20
+    4                       40
+    6                       60
+    8                       80
+   10                      100
+   12                      120
+   14                      140
+   16                      160
+   18                      180
+   20                      200
+    5                       50
+   15                      150
+
+
+Site number: 7
+Site status = ACTIVE
+Data item number          Committed Value
+    2                       20
+    4                       40
+    6                       60
+    8                       80
+   10                      100
+   12                      120
+   14                      140
+   16                      160
+   18                      180
+   20                      200
+
+
+Site number: 8
+Site status = ACTIVE
+Data item number          Committed Value
+    2                       20
+    4                       40
+    6                       60
+    8                       80
+   10                      100
+   12                      120
+   14                      140
+   16                      160
+   18                      180
+   20                      200
+    7                       70
+   17                      170
+
+
+Site number: 9
+Site status = ACTIVE
+Data item number          Committed Value
+    2                       20
+    4                       40
+    6                       60
+    8                       80
+   10                      100
+   12                      120
+   14                      140
+   16                      160
+   18                      180
+   20                      200
+
+
+Site number: 10
+Site status = ACTIVE
+Data item number          Committed Value
+    2                       20
+    4                       40
+    6                       60
+    8                       80
+   10                      100
+   12                      120
+   14                      140
+   16                      160
+   18                      180
+   20                      200
+    9                       90
+   19                      190
+
+
+Transaction ID 2 read x2 from site 1. Value read: 20
+Transaction ID 1 read x1 from site 2. Value read: 10
+Transaction ID 2 read x4 from site 1. Value read: 40
+Transaction ID 1 read x3 from site 4. Value read: 30
+Processing dump()
+Site number: 1
+Site status = ACTIVE
+Data item number          Committed Value
+    2                       20
+    4                       40
+    6                       60
+    8                       80
+   10                      100
+   12                      120
+   14                      140
+   16                      160
+   18                      180
+   20                      200
+
+
+Site number: 2
+Site status = ACTIVE
+Data item number          Committed Value
+    2                       20
+    4                       40
+    6                       60
+    8                       80
+   10                      100
+   12                      120
+   14                      140
+   16                      160
+   18                      180
+   20                      200
+    1                       10
+   11                      110
+
+
+Site number: 3
+Site status = ACTIVE
+Data item number          Committed Value
+    2                       20
+    4                       40
+    6                       60
+    8                       80
+   10                      100
+   12                      120
+   14                      140
+   16                      160
+   18                      180
+   20                      200
+
+
+Site number: 4
+Site status = ACTIVE
+Data item number          Committed Value
+    2                       20
+    4                       40
+    6                       60
+    8                       80
+   10                      100
+   12                      120
+   14                      140
+   16                      160
+   18                      180
+   20                      200
+    3                       30
+   13                      130
+
+
+Site number: 5
+Site status = ACTIVE
+Data item number          Committed Value
+    2                       20
+    4                       40
+    6                       60
+    8                       80
+   10                      100
+   12                      120
+   14                      140
+   16                      160
+   18                      180
+   20                      200
+
+
+Site number: 6
+Site status = ACTIVE
+Data item number          Committed Value
+    2                       20
+    4                       40
+    6                       60
+    8                       80
+   10                      100
+   12                      120
+   14                      140
+   16                      160
+   18                      180
+   20                      200
+    5                       50
+   15                      150
+
+
+Site number: 7
+Site status = FAILED
+Data item number          Committed Value
+    2                       20
+    4                       40
+    6                       60
+    8                       80
+   10                      100
+   12                      120
+   14                      140
+   16                      160
+   18                      180
+   20                      200
+
+
+Site number: 8
+Site status = ACTIVE
+Data item number          Committed Value
+    2                       20
+    4                       40
+    6                       60
+    8                       80
+   10                      100
+   12                      120
+   14                      140
+   16                      160
+   18                      180
+   20                      200
+    7                       70
+   17                      170
+
+
+Site number: 9
+Site status = ACTIVE
+Data item number          Committed Value
+    2                       20
+    4                       40
+    6                       60
+    8                       80
+   10                      100
+   12                      120
+   14                      140
+   16                      160
+   18                      180
+   20                      200
+
+
+Site number: 10
+Site status = ACTIVE
+Data item number          Committed Value
+    2                       20
+    4                       40
+    6                       60
+    8                       80
+   10                      100
+   12                      120
+   14                      140
+   16                      160
+   18                      180
+   20                      200
+    9                       90
+   19                      190
+
+
+Processing dump()
+Site number: 1
+Site status = ACTIVE
+Data item number          Committed Value
+    2                       20
+    4                       40
+    6                       60
+    8                       80
+   10                      100
+   12                      120
+   14                      140
+   16                      160
+   18                      180
+   20                      200
+
+
+Site number: 2
+Site status = ACTIVE
+Data item number          Committed Value
+    2                       20
+    4                       40
+    6                       60
+    8                       80
+   10                      100
+   12                      120
+   14                      140
+   16                      160
+   18                      180
+   20                      200
+    1                       10
+   11                      110
+
+
+Site number: 3
+Site status = ACTIVE
+Data item number          Committed Value
+    2                       20
+    4                       40
+    6                       60
+    8                       80
+   10                      100
+   12                      120
+   14                      140
+   16                      160
+   18                      180
+   20                      200
+
+
+Site number: 4
+Site status = ACTIVE
+Data item number          Committed Value
+    2                       20
+    4                       40
+    6                       60
+    8                       80
+   10                      100
+   12                      120
+   14                      140
+   16                      160
+   18                      180
+   20                      200
+    3                       30
+   13                      130
+
+
+Site number: 5
+Site status = ACTIVE
+Data item number          Committed Value
+    2                       20
+    4                       40
+    6                       60
+    8                       80
+   10                      100
+   12                      120
+   14                      140
+   16                      160
+   18                      180
+   20                      200
+
+
+Site number: 6
+Site status = ACTIVE
+Data item number          Committed Value
+    2                       20
+    4                       40
+    6                       60
+    8                       80
+   10                      100
+   12                      120
+   14                      140
+   16                      160
+   18                      180
+   20                      200
+    5                       50
+   15                      150
+
+
+Site number: 7
+Site status = FAILED
+Data item number          Committed Value
+    2                       20
+    4                       40
+    6                       60
+    8                       80
+   10                      100
+   12                      120
+   14                      140
+   16                      160
+   18                      180
+   20                      200
+
+
+Site number: 8
+Site status = FAILED
+Data item number          Committed Value
+    2                       20
+    4                       40
+    6                       60
+    8                       80
+   10                      100
+   12                      120
+   14                      140
+   16                      160
+   18                      180
+   20                      200
+    7                       70
+   17                      170
+
+
+Site number: 9
+Site status = ACTIVE
+Data item number          Committed Value
+    2                       20
+    4                       40
+    6                       60
+    8                       80
+   10                      100
+   12                      120
+   14                      140
+   16                      160
+   18                      180
+   20                      200
+
+
+Site number: 10
+Site status = ACTIVE
+Data item number          Committed Value
+    2                       20
+    4                       40
+    6                       60
+    8                       80
+   10                      100
+   12                      120
+   14                      140
+   16                      160
+   18                      180
+   20                      200
+    9                       90
+   19                      190
+
+
+Processing dump()
+Site number: 1
+Site status = ACTIVE
+Data item number          Committed Value
+    2                       20
+    4                       40
+    6                       60
+    8                       80
+   10                      100
+   12                      120
+   14                      140
+   16                      160
+   18                      180
+   20                      200
+
+
+Site number: 2
+Site status = ACTIVE
+Data item number          Committed Value
+    2                       20
+    4                       40
+    6                       60
+    8                       80
+   10                      100
+   12                      120
+   14                      140
+   16                      160
+   18                      180
+   20                      200
+    1                       10
+   11                      110
+
+
+Site number: 3
+Site status = ACTIVE
+Data item number          Committed Value
+    2                       20
+    4                       40
+    6                       60
+    8                       80
+   10                      100
+   12                      120
+   14                      140
+   16                      160
+   18                      180
+   20                      200
+
+
+Site number: 4
+Site status = ACTIVE
+Data item number          Committed Value
+    2                       20
+    4                       40
+    6                       60
+    8                       80
+   10                      100
+   12                      120
+   14                      140
+   16                      160
+   18                      180
+   20                      200
+    3                       30
+   13                      130
+
+
+Site number: 5
+Site status = ACTIVE
+Data item number          Committed Value
+    2                       20
+    4                       40
+    6                       60
+    8                       80
+   10                      100
+   12                      120
+   14                      140
+   16                      160
+   18                      180
+   20                      200
+
+
+Site number: 6
+Site status = ACTIVE
+Data item number          Committed Value
+    2                       20
+    4                       40
+    6                       60
+    8                       80
+   10                      100
+   12                      120
+   14                      140
+   16                      160
+   18                      180
+   20                      200
+    5                       50
+   15                      150
+
+
+Site number: 7
+Site status = FAILED
+Data item number          Committed Value
+    2                       20
+    4                       40
+    6                       60
+    8                       80
+   10                      100
+   12                      120
+   14                      140
+   16                      160
+   18                      180
+   20                      200
+
+
+Site number: 8
+Site status = FAILED
+Data item number          Committed Value
+    2                       20
+    4                       40
+    6                       60
+    8                       80
+   10                      100
+   12                      120
+   14                      140
+   16                      160
+   18                      180
+   20                      200
+    7                       70
+   17                      170
+
+
+Site number: 9
+Site status = FAILED
+Data item number          Committed Value
+    2                       20
+    4                       40
+    6                       60
+    8                       80
+   10                      100
+   12                      120
+   14                      140
+   16                      160
+   18                      180
+   20                      200
+
+
+Site number: 10
+Site status = ACTIVE
+Data item number          Committed Value
+    2                       20
+    4                       40
+    6                       60
+    8                       80
+   10                      100
+   12                      120
+   14                      140
+   16                      160
+   18                      180
+   20                      200
+    9                       90
+   19                      190
+
+
+Processing dump()
+Site number: 1
+Site status = ACTIVE
+Data item number          Committed Value
+    2                       20
+    4                       40
+    6                       60
+    8                       80
+   10                      100
+   12                      120
+   14                      140
+   16                      160
+   18                      180
+   20                      200
+
+
+Site number: 2
+Site status = ACTIVE
+Data item number          Committed Value
+    2                       20
+    4                       40
+    6                       60
+    8                       80
+   10                      100
+   12                      120
+   14                      140
+   16                      160
+   18                      180
+   20                      200
+    1                       10
+   11                      110
+
+
+Site number: 3
+Site status = ACTIVE
+Data item number          Committed Value
+    2                       20
+    4                       40
+    6                       60
+    8                       80
+   10                      100
+   12                      120
+   14                      140
+   16                      160
+   18                      180
+   20                      200
+
+
+Site number: 4
+Site status = ACTIVE
+Data item number          Committed Value
+    2                       20
+    4                       40
+    6                       60
+    8                       80
+   10                      100
+   12                      120
+   14                      140
+   16                      160
+   18                      180
+   20                      200
+    3                       30
+   13                      130
+
+
+Site number: 5
+Site status = ACTIVE
+Data item number          Committed Value
+    2                       20
+    4                       40
+    6                       60
+    8                       80
+   10                      100
+   12                      120
+   14                      140
+   16                      160
+   18                      180
+   20                      200
+
+
+Site number: 6
+Site status = ACTIVE
+Data item number          Committed Value
+    2                       20
+    4                       40
+    6                       60
+    8                       80
+   10                      100
+   12                      120
+   14                      140
+   16                      160
+   18                      180
+   20                      200
+    5                       50
+   15                      150
+
+
+Site number: 7
+Site status = FAILED
+Data item number          Committed Value
+    2                       20
+    4                       40
+    6                       60
+    8                       80
+   10                      100
+   12                      120
+   14                      140
+   16                      160
+   18                      180
+   20                      200
+
+
+Site number: 8
+Site status = FAILED
+Data item number          Committed Value
+    2                       20
+    4                       40
+    6                       60
+    8                       80
+   10                      100
+   12                      120
+   14                      140
+   16                      160
+   18                      180
+   20                      200
+    7                       70
+   17                      170
+
+
+Site number: 9
+Site status = FAILED
+Data item number          Committed Value
+    2                       20
+    4                       40
+    6                       60
+    8                       80
+   10                      100
+   12                      120
+   14                      140
+   16                      160
+   18                      180
+   20                      200
+
+
+Site number: 10
+Site status = FAILED
+Data item number          Committed Value
+    2                       20
+    4                       40
+    6                       60
+    8                       80
+   10                      100
+   12                      120
+   14                      140
+   16                      160
+   18                      180
+   20                      200
+    9                       90
+   19                      190
+
+
+Processing dump()
+Site number: 1
+Site status = ACTIVE
+Data item number          Committed Value
+    2                       20
+    4                       40
+    6                       60
+    8                       80
+   10                      100
+   12                      120
+   14                      140
+   16                      160
+   18                      180
+   20                      200
+
+
+Site number: 2
+Site status = ACTIVE
+Data item number          Committed Value
+    2                       20
+    4                       40
+    6                       60
+    8                       80
+   10                      100
+   12                      120
+   14                      140
+   16                      160
+   18                      180
+   20                      200
+    1                       10
+   11                      110
+
+
+Site number: 3
+Site status = ACTIVE
+Data item number          Committed Value
+    2                       20
+    4                       40
+    6                       60
+    8                       80
+   10                      100
+   12                      120
+   14                      140
+   16                      160
+   18                      180
+   20                      200
+
+
+Site number: 4
+Site status = ACTIVE
+Data item number          Committed Value
+    2                       20
+    4                       40
+    6                       60
+    8                       80
+   10                      100
+   12                      120
+   14                      140
+   16                      160
+   18                      180
+   20                      200
+    3                       30
+   13                      130
+
+
+Site number: 5
+Site status = ACTIVE
+Data item number          Committed Value
+    2                       20
+    4                       40
+    6                       60
+    8                       80
+   10                      100
+   12                      120
+   14                      140
+   16                      160
+   18                      180
+   20                      200
+
+
+Site number: 6
+Site status = ACTIVE
+Data item number          Committed Value
+    2                       20
+    4                       40
+    6                       60
+    8                       80
+   10                      100
+   12                      120
+   14                      140
+   16                      160
+   18                      180
+   20                      200
+    5                       50
+   15                      150
+
+
+Site number: 7
+Site status = FAILED
+Data item number          Committed Value
+    2                       20
+    4                       40
+    6                       60
+    8                       80
+   10                      100
+   12                      120
+   14                      140
+   16                      160
+   18                      180
+   20                      200
+
+
+Site number: 8
+Site status = ACTIVE
+Data item number          Committed Value
+    2                       20
+    4                       40
+    6                       60
+    8                       80
+   10                      100
+   12                      120
+   14                      140
+   16                      160
+   18                      180
+   20                      200
+    7                       70
+   17                      170
+
+
+Site number: 9
+Site status = FAILED
+Data item number          Committed Value
+    2                       20
+    4                       40
+    6                       60
+    8                       80
+   10                      100
+   12                      120
+   14                      140
+   16                      160
+   18                      180
+   20                      200
+
+
+Site number: 10
+Site status = FAILED
+Data item number          Committed Value
+    2                       20
+    4                       40
+    6                       60
+    8                       80
+   10                      100
+   12                      120
+   14                      140
+   16                      160
+   18                      180
+   20                      200
+    9                       90
+   19                      190
+
+
+Processing dump()
+Site number: 1
+Site status = ACTIVE
+Data item number          Committed Value
+    2                       20
+    4                       40
+    6                       60
+    8                       80
+   10                      100
+   12                      120
+   14                      140
+   16                      160
+   18                      180
+   20                      200
+
+
+Site number: 2
+Site status = ACTIVE
+Data item number          Committed Value
+    2                       20
+    4                       40
+    6                       60
+    8                       80
+   10                      100
+   12                      120
+   14                      140
+   16                      160
+   18                      180
+   20                      200
+    1                       10
+   11                      110
+
+
+Site number: 3
+Site status = ACTIVE
+Data item number          Committed Value
+    2                       20
+    4                       40
+    6                       60
+    8                       80
+   10                      100
+   12                      120
+   14                      140
+   16                      160
+   18                      180
+   20                      200
+
+
+Site number: 4
+Site status = ACTIVE
+Data item number          Committed Value
+    2                       20
+    4                       40
+    6                       60
+    8                       80
+   10                      100
+   12                      120
+   14                      140
+   16                      160
+   18                      180
+   20                      200
+    3                       30
+   13                      130
+
+
+Site number: 5
+Site status = ACTIVE
+Data item number          Committed Value
+    2                       20
+    4                       40
+    6                       60
+    8                       80
+   10                      100
+   12                      120
+   14                      140
+   16                      160
+   18                      180
+   20                      200
+
+
+Site number: 6
+Site status = ACTIVE
+Data item number          Committed Value
+    2                       20
+    4                       40
+    6                       60
+    8                       80
+   10                      100
+   12                      120
+   14                      140
+   16                      160
+   18                      180
+   20                      200
+    5                       50
+   15                      150
+
+
+Site number: 7
+Site status = FAILED
+Data item number          Committed Value
+    2                       20
+    4                       40
+    6                       60
+    8                       80
+   10                      100
+   12                      120
+   14                      140
+   16                      160
+   18                      180
+   20                      200
+
+
+Site number: 8
+Site status = ACTIVE
+Data item number          Committed Value
+    2                       20
+    4                       40
+    6                       60
+    8                       80
+   10                      100
+   12                      120
+   14                      140
+   16                      160
+   18                      180
+   20                      200
+    7                       70
+   17                      170
+
+
+Site number: 9
+Site status = ACTIVE
+Data item number          Committed Value
+    2                       20
+    4                       40
+    6                       60
+    8                       80
+   10                      100
+   12                      120
+   14                      140
+   16                      160
+   18                      180
+   20                      200
+
+
+Site number: 10
+Site status = FAILED
+Data item number          Committed Value
+    2                       20
+    4                       40
+    6                       60
+    8                       80
+   10                      100
+   12                      120
+   14                      140
+   16                      160
+   18                      180
+   20                      200
+    9                       90
+   19                      190
+
+
+TransactionID 3 aborted at time 22. Reason: Transaction 3 cannot wait for older transaction 1
+Processing dump()
+Site number: 1
+Site status = ACTIVE
+Data item number          Committed Value
+    2                       20
+    4                       40
+    6                       60
+    8                       80
+   10                      100
+   12                      120
+   14                      140
+   16                      160
+   18                      180
+   20                      200
+
+
+Site number: 2
+Site status = ACTIVE
+Data item number          Committed Value
+    2                       20
+    4                       40
+    6                       60
+    8                       80
+   10                      100
+   12                      120
+   14                      140
+   16                      160
+   18                      180
+   20                      200
+    1                       10
+   11                      110
+
+
+Site number: 3
+Site status = ACTIVE
+Data item number          Committed Value
+    2                       20
+    4                       40
+    6                       60
+    8                       80
+   10                      100
+   12                      120
+   14                      140
+   16                      160
+   18                      180
+   20                      200
+
+
+Site number: 4
+Site status = ACTIVE
+Data item number          Committed Value
+    2                       20
+    4                       40
+    6                       60
+    8                       80
+   10                      100
+   12                      120
+   14                      140
+   16                      160
+   18                      180
+   20                      200
+    3                       30
+   13                      130
+
+
+Site number: 5
+Site status = ACTIVE
+Data item number          Committed Value
+    2                       20
+    4                       40
+    6                       60
+    8                       80
+   10                      100
+   12                      120
+   14                      140
+   16                      160
+   18                      180
+   20                      200
+
+
+Site number: 6
+Site status = ACTIVE
+Data item number          Committed Value
+    2                       20
+    4                       40
+    6                       60
+    8                       80
+   10                      100
+   12                      120
+   14                      140
+   16                      160
+   18                      180
+   20                      200
+    5                       50
+   15                      150
+
+
+Site number: 7
+Site status = ACTIVE
+Data item number          Committed Value
+    2                       20
+    4                       40
+    6                       60
+    8                       80
+   10                      100
+   12                      120
+   14                      140
+   16                      160
+   18                      180
+   20                      200
+
+
+Site number: 8
+Site status = ACTIVE
+Data item number          Committed Value
+    2                       20
+    4                       40
+    6                       60
+    8                       80
+   10                      100
+   12                      120
+   14                      140
+   16                      160
+   18                      180
+   20                      200
+    7                       70
+   17                      170
+
+
+Site number: 9
+Site status = ACTIVE
+Data item number          Committed Value
+    2                       20
+    4                       40
+    6                       60
+    8                       80
+   10                      100
+   12                      120
+   14                      140
+   16                      160
+   18                      180
+   20                      200
+
+
+Site number: 10
+Site status = FAILED
+Data item number          Committed Value
+    2                       20
+    4                       40
+    6                       60
+    8                       80
+   10                      100
+   12                      120
+   14                      140
+   16                      160
+   18                      180
+   20                      200
+    9                       90
+   19                      190
+
+
+Processing dump()
+Site number: 1
+Site status = ACTIVE
+Data item number          Committed Value
+    2                       20
+    4                       40
+    6                       60
+    8                       80
+   10                      100
+   12                      120
+   14                      140
+   16                      160
+   18                      180
+   20                      200
+
+
+Site number: 2
+Site status = ACTIVE
+Data item number          Committed Value
+    2                       20
+    4                       40
+    6                       60
+    8                       80
+   10                      100
+   12                      120
+   14                      140
+   16                      160
+   18                      180
+   20                      200
+    1                       10
+   11                      110
+
+
+Site number: 3
+Site status = ACTIVE
+Data item number          Committed Value
+    2                       20
+    4                       40
+    6                       60
+    8                       80
+   10                      100
+   12                      120
+   14                      140
+   16                      160
+   18                      180
+   20                      200
+
+
+Site number: 4
+Site status = ACTIVE
+Data item number          Committed Value
+    2                       20
+    4                       40
+    6                       60
+    8                       80
+   10                      100
+   12                      120
+   14                      140
+   16                      160
+   18                      180
+   20                      200
+    3                       30
+   13                      130
+
+
+Site number: 5
+Site status = ACTIVE
+Data item number          Committed Value
+    2                       20
+    4                       40
+    6                       60
+    8                       80
+   10                      100
+   12                      120
+   14                      140
+   16                      160
+   18                      180
+   20                      200
+
+
+Site number: 6
+Site status = ACTIVE
+Data item number          Committed Value
+    2                       20
+    4                       40
+    6                       60
+    8                       80
+   10                      100
+   12                      120
+   14                      140
+   16                      160
+   18                      180
+   20                      200
+    5                       50
+   15                      150
+
+
+Site number: 7
+Site status = ACTIVE
+Data item number          Committed Value
+    2                       20
+    4                       40
+    6                       60
+    8                       80
+   10                      100
+   12                      120
+   14                      140
+   16                      160
+   18                      180
+   20                      200
+
+
+Site number: 8
+Site status = ACTIVE
+Data item number          Committed Value
+    2                       20
+    4                       40
+    6                       60
+    8                       80
+   10                      100
+   12                      120
+   14                      140
+   16                      160
+   18                      180
+   20                      200
+    7                       70
+   17                      170
+
+
+Site number: 9
+Site status = ACTIVE
+Data item number          Committed Value
+    2                       20
+    4                       40
+    6                       60
+    8                       80
+   10                      100
+   12                      120
+   14                      140
+   16                      160
+   18                      180
+   20                      200
+
+
+Site number: 10
+Site status = ACTIVE
+Data item number          Committed Value
+    2                       20
+    4                       40
+    6                       60
+    8                       80
+   10                      100
+   12                      120
+   14                      140
+   16                      160
+   18                      180
+   20                      200
+    9                       90
+   19                      190
+
+
+End of output

@@ -5,7 +5,7 @@ import java.util.Queue;
 
 /**
  * Transaction object storing
- * transaction id, start/end time, operations and type
+ * transaction id, start/end time, _operations and type
  * @author Shuang on 11/29/16.
  */
 public class Transaction {

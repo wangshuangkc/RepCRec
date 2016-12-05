@@ -18,7 +18,6 @@ public class TransactionManager {
     _dbs = dbs;
   }
 
-
   /**
    * Begin a transaction, setting the id, start time, and if Read-Only
    *
@@ -32,7 +31,7 @@ public class TransactionManager {
       return;
     }
     _transactions.put(tid, t);
-
+    _dbs.printVerbose(tid + " begins");
   }
 
   /**
@@ -45,12 +44,12 @@ public class TransactionManager {
    */
   public void read(String tid, String vid) {
     if (_abortList.contains(tid)) {
-      System.out.println("Error: cannot read " + vid + " because " + tid + " is aborted.");
+      _dbs.printVerbose("Failed: " + tid + " is aborted.");
       return;
     }
 
     if (_waitingList.contains(tid)) {
-      System.out.println("Error: cannot read " + vid + " because " + tid + " is waiting.");
+      _dbs.printVerbose("Failed: " + tid + " is waiting.");
       return;
     }
 
@@ -63,6 +62,7 @@ public class TransactionManager {
 
     Site site = selectSite(vid);
     if (site == null) {
+      _dbs.printVerbose("No available site for accessing " + vid);
       Operation op = new Operation(OperationType.R, vid);
       t.addOperation(op);
       _waitingList.add(tid);
@@ -71,7 +71,7 @@ public class TransactionManager {
 
     if (t._readOnly) {
       int value = site.readVariable(vid, t._startTimestamp);
-      System.out.println(tid + " reads " + vid + " on Site" + site._sid + ": " + value);
+      System.out.println(tid + " reads " + vid + " at site" + site._sid + ": " + value);
 
       return;
     }
@@ -79,7 +79,7 @@ public class TransactionManager {
     boolean canRead = site.RLockVariable(tid, vid, _waitForGraph);
     if (canRead) {
       int value = site.readVariable(vid, false);
-      System.out.println(tid + " reads " + vid + " on site " + site._sid + ": " + value);
+      System.out.println(tid + " reads " + vid + " at site " + site._sid + ": " + value);
     } else {
       Operation op = new Operation(OperationType.R, vid);
       t.addOperation(op);
@@ -145,14 +145,14 @@ public class TransactionManager {
         Site s = _dbs._sites.get(sid - 1);
         s.writeOnSite(vid, val);
         _transactions.get(tid)._dirtyVIds.add(vid);
-        System.out.println(tid + " writes on " + vid + " at site " + s._sid + ": " + val);
+        _dbs.printVerbose(tid + " writes on " + vid + " at site " + s._sid + ": " + val);
       } else {
         //write on all sites
         for (Site s : _dbs._sites) {
           s.writeOnSite(vid, val);
         }
         _transactions.get(tid)._dirtyVIds.add(vid);
-        System.out.println(tid + " writes on " + vid + " at all sites: " + val);
+        _dbs.printVerbose(tid + " writes on " + vid + " at all available sites: " + val);
       }
     } else {
       System.out.println(tid + " cannot write currently");
@@ -181,8 +181,9 @@ public class TransactionManager {
     }
 
     for (Site s : temp) {
-      if (s.isFailed() || s.getVariable(vid) == null) {
+      if (s.isFailed()) {
         count++;
+        _dbs.printVerbose("cannot write on failed site " + s._sid);
         continue;
       }
       if (s._lockTable.containsKey(vid) && !s._lockTable.get(vid).isEmpty()) {
@@ -207,14 +208,15 @@ public class TransactionManager {
             s._lockTable.get(vid).add(0, new Lock(LockType.WL, tid, vid));  // replace the read lock with write lock
           }
         }
-
       } else {
         List<Lock> locks = new ArrayList<>();
         locks.add(new Lock(LockType.WL, tid, vid));     //vid is not locked, add it a write lock
         s._lockTable.put(vid, locks);
       }
     }
-    if (count == _dbs.NUM_SITE) res = false; //all the sites fail or no working sites has var
+    if (count == _dbs.NUM_SITE)  {
+      res = false; //all the sites fail or no working sites has var
+    }
     return res;
   }
 
@@ -337,6 +339,10 @@ public class TransactionManager {
       }
     }
 
+    if (!canCommit) {
+      _abortList.add(tid);
+      _dbs.printVerbose("abort " + tid);
+    }
 //    for(Site s: _dbs._sites) {
 //      s.commitValue(tid, timestamp);
 //    }

@@ -12,6 +12,7 @@ public class Site {
   final Map<String, List<Lock>> _lockTable = new HashMap<>();
   final Map<String, Variable> _variables = new HashMap<>();
   private boolean _failed = false;
+  private int _failedTimeStamp = -1;
 
   public Site(int id) {
     _sid = id;
@@ -22,10 +23,10 @@ public class Site {
    *
    * @author Shuang
    */
-  public void fail() {
+  public void fail(int timestamp) {
     _failed = true;
+    _failedTimeStamp = timestamp;
     _lockTable.clear();
-    System.out.println("Site" + _sid + " failed");
   }
 
   /**
@@ -42,7 +43,6 @@ public class Site {
         e.getValue().blockRead();
       }
     }
-    System.out.println("Site" + _sid + " recovered");
   }
 
   /**
@@ -53,6 +53,10 @@ public class Site {
    */
   public boolean isFailed() {
     return _failed;
+  }
+
+  public int whenFailed() {
+    return _failedTimeStamp;
   }
 
   /**
