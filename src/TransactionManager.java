@@ -138,7 +138,7 @@ public class TransactionManager {
       return;
     }
 
-    if(canWrite(tid, vid, _waitForGraph)) {
+    if(canWrite(tid, vid)) {
       int vidx = Integer.valueOf(vid.substring(1));
       if (vidx % 2 == 1) {
         int sid = 1 + vidx % _dbs.NUM_SITE;
@@ -164,7 +164,7 @@ public class TransactionManager {
     }
   }
 
-  private boolean canWrite(String tid, String vid, Map<String, List<String>> waitForGraph) {
+  private boolean canWrite(String tid, String vid) {
     boolean res = true;
     int vidx = Integer.valueOf(vid.substring(1));
     int count = 0;
