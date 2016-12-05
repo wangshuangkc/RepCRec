@@ -236,10 +236,10 @@ public class TransactionManager {
 
     //update the _waitForGraph, clear all t waiting for abort t, remove abort t from waitlist if any t has it, by Yuchang
     for(String tid: _waitForGraph.keySet()) {
-      if(tid == abortOne._tid) _waitForGraph.remove(tid);
+      if(abortOne._tid.equals(tid)) _waitForGraph.remove(tid);
       else {
         for (String child : _waitForGraph.get(tid)) {
-          if (child == abortOne._tid) _waitForGraph.get(tid).remove(child);
+          if (abortOne._tid.equals(child)) _waitForGraph.get(tid).remove(child);
         }
       }
     }
