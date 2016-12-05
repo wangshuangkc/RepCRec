@@ -5,29 +5,20 @@ import java.util.Queue;
 
 /**
  * Transaction object storing
- * transaction id, start/commitTransaction time, operations and type
+ * transaction id, start/end time, operations and type
  * @author Shuang on 11/29/16.
  */
 public class Transaction {
-  public final String _tid;
-  public final int _startTimestamp;
-  public final boolean _readOnly;
-  public Operation _pendingOp = null;
-  private List<String> _dirtyVids = new ArrayList<>();
-  private int _endTimeStamp;
+  final String _tid;
+  final int _startTimestamp;
+  final boolean _readOnly;
+  final List<String> _dirtyVIds = new ArrayList<>();
+  Operation _pendingOp = null;
 
   public Transaction(String id, int timestamp, boolean readOnly) {
     _tid = id;
     _startTimestamp = timestamp;
     _readOnly = readOnly;
-  }
-
-  /**
-   * Commit the transaction
-   * @param endTime the timestamp of commission
-   */
-  public void commit(int endTime) {
-    _endTimeStamp = endTime;
   }
 
   /**

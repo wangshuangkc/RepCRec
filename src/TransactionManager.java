@@ -144,13 +144,11 @@ public class TransactionManager {
         int sid = 1 + vidx % _dbs.NUM_SITE;
         Site s = _dbs._sites.get(sid - 1);
         s.writeOnSite(vid, val);
+        _transactions.get(tid)._dirtyVIds.add(vid);
         System.out.println(tid + " writes on " + vid + " at site " + s + ": " + val);
       } else {
         //write on all sites
         for (Site s : _dbs._sites) {
-          if (s.getVariable(vid) == null) {
-            continue;
-          }
           s.writeOnSite(vid, val);
         }
         System.out.println(tid + " writes on " + vid + " at all sites: " + val);
@@ -214,7 +212,6 @@ public class TransactionManager {
     if(count == _dbs.NUM_SITE) res = false; //all the sites fail or no working sites has var
     return res;
   }
-
 
   /**
    * DeadLock detect when transaction need to be added into wait list
@@ -286,13 +283,47 @@ public class TransactionManager {
    * @param tid given transaction id
    * @param timestamp current time
    *
-   * @author Yuchang
+   * @author Yuchang, Shuang
    */
   public void commitTransaction(String tid, int timestamp) {
-    _transactions.get(tid).commit(timestamp);
-    for(Site s: _dbs._sites) {
-      s.commitValue(tid, timestamp);
+    Transaction t = _transactions.get(tid);
+    boolean canCommit = true;
+    for (String dv : t._dirtyVIds) {
+      int dvidx = Integer.valueOf(dv.substring(1));
+      if (dvidx % 2 == 1) {
+        int sid = 1 + dvidx % _dbs.NUM_SITE;
+        Site s = _dbs._sites.get(sid - 1);
+        if (s.isFailed()) {
+          canCommit = false;
+          break;
+        }
+      } else {
+        for (Site s : _dbs._sites) {
+          if (s.isFailed()) {
+            canCommit = false;
+            break;
+          }
+        }
+      }
     }
+
+    for (Site s : _dbs._sites) {
+      for (String dv : t._dirtyVIds) {
+        Variable v = s.getVariable(dv);
+        if (v != null) {
+          if (canCommit) {
+            v.commit(timestamp);
+          } else {
+            v.revert();
+          }
+        }
+      }
+    }
+
+//    for(Site s: _dbs._sites) {
+//      s.commitValue(tid, timestamp);
+//    }
+
     abortTransaction(_transactions.get(tid));
   }
 

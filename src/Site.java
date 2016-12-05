@@ -75,6 +75,10 @@ public class Site {
    * @author Shuang
    */
   public Variable getVariable(String vid) {
+    if (!_variables.containsKey(vid)) {
+      return null;
+    }
+
     return _variables.get(vid);
   }
 
@@ -201,15 +205,15 @@ public class Site {
    * @param timestamp the time when the transaction commit
    * @author Yuchang
    */
-  public void commitValue(String tid, int timestamp) {
-    for(String var: _lockTable.keySet()) {
-      for(Lock lock: _lockTable.get(var)) {
-        if(lock._transactionId.equals(tid)) {
-          _variables.get(var).commit(timestamp);
-        }
-      }
-    }
-  }
+//  public void commitValue(String tid, int timestamp) {
+//    for(String var: _lockTable.keySet()) {
+//      for(Lock lock: _lockTable.get(var)) {
+//        if(lock._transactionId.equals(tid)) {
+//          _variables.get(var).commit(timestamp);
+//        }
+//      }
+//    }
+//  }
 
   /**
    * Get a list of variable ids stored in the site

@@ -101,6 +101,13 @@ public class Variable {
   }
 
   /**
+   * When a transaction is aborted
+   */
+  public void revert() {
+    _value = readLastCommited();
+  }
+
+  /**
    * Return the last committed value before the present
    * @return the last committed value
    *
