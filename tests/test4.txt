@@ -1,0 +1,25 @@
+// Test 4
+
+begin(T1)
+begin(T2)
+begin(T3)
+begin(T4)
+dump()
+R(T4,x2)					// T4 Reads x2 from site 1
+W(T4,x2,12)					// Writes to all sites
+R(T2,x2)					// T2 waits for T4
+R(T3,x4)					// T3 reads from site 1
+W(T2,x2,2); W(T3,x4,4)		// T2 still pending, T3 writes to all sites
+end(T3)						// Succeed
+dump()
+fail(3)						// Cause T4 to fail to validate
+R(T1,x4)					// Reads x4 from site 1, value = 4
+end(T2)						// Pending
+dump()					
+W(T1,x4,44)					// Writes to all sites
+R(T1,x2)					// Waits for site 4
+W(T1,x2,88)					// Pending
+end(T1)						// pending
+end(T4)						// Should fail beause of site 3
+dump()
+dump()

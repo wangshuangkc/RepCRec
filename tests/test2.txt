@@ -1,0 +1,20 @@
+// Test 2
+
+begin(T1)
+begin(T2)
+dump()
+R(T1,x2)		// Should read from site 1
+R(T2,x3)		// Should read from site 4
+fail(2)
+W(T1,x2,2)		// Should succeed
+W(T2,x3,3)		// Should succeed
+R(T2,x5)		// Should read from site 6
+W(T2,x5,5)		// Should succeed
+R(T2,x7)		// Should read from site 8
+W(T2,x7,7)		// Should succeed
+end(T1)			// Should succeed
+dump()
+end(T2)			// Should succeed
+dump()
+recover(2)
+dump()

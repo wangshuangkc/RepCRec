@@ -12,7 +12,8 @@ public class DBSystem {
   private int _timestamp = 0;
   final List<Site> _sites;
   final TransactionManager _tm = new TransactionManager(this);
-  final List<String> operations = new ArrayList<>();
+  // final List<String> _operations = new ArrayList<>();
+  private static final boolean verbose = true;
 
   public DBSystem() {
     _sites = setupSites();
@@ -57,70 +58,75 @@ public class DBSystem {
   }
 
   /**
-   * Read operations from the input script
+   * Read each event from the input script, and operate the event
    * @param fileName, input file name including path
    *
-   * @author Yuchang
+   * @author Yuchang, Shuang
    */
-  public void readInputFile(String fileName) throws IOException {
-    FileReader fileReader = new FileReader(fileName);
-    BufferedReader bufferedReader = new BufferedReader(fileReader);
-    String line = null;
-    while((line = bufferedReader.readLine()) != null) {
-      //System.out.println(line);
-      operations.add(line);
+  public void run(String fileName) {
+    try {
+      FileReader fileReader = new FileReader(fileName);
+      BufferedReader br = new BufferedReader(fileReader);
+      printVerbose("Read input from " + fileName);
+      String line;
+      while ((line = br.readLine()) != null) {
+        _timestamp++;
+        String[] events = line.split(";");
+        for (String event : events) {
+          if (event == null || event.trim().isEmpty() || event.startsWith("//")) {
+            continue;
+          }
+          if (event.contains("//")) {
+            event = event.substring(0, event.indexOf("//"));
+          }
+          runCommand(event);
+        }
+      }
+      br.close();
+    } catch (Exception e) {
+      System.out.println("Error: Invalid input file name. " + e.getMessage());
     }
-    bufferedReader.close();
-    runDB();
   }
 
-  private void runDB() {
-    for(String op: operations) {
-      //parse the String operation
-      String ope = op.replaceAll("\\s+", "");
-      if(ope.contains("begin")) {
-        String tid = ope.substring(ope.indexOf("(")+1, ope.indexOf(")"));
-        System.out.println("begin transaction " + tid);
-        boolean readOnly = false;
-        if(ope.contains("beginRO")) readOnly = true;
-        _tm.begin(tid, _timestamp++, readOnly);
-      } else if(ope.contains("R")) {
-        int split = ope.indexOf(",");
-        String tid = ope.substring(ope.indexOf("(")+1, split);
-        String vid = ope.substring(split+1, ope.indexOf(")"));
-        _tm.read(tid, vid);
-        //System.out.println("read transaction " + tid);
-        //System.out.println("read variable " + vid);
-      } else if(ope.contains("W")) {
-        int first = ope.indexOf(",");
-        String tid = ope.substring(ope.indexOf("(")+1, first);
-        int second = ope.indexOf(",", first + 1);
-        String vid = ope.substring(first+1, second);
-        int val = Integer.parseInt(ope.substring(second+1, ope.indexOf(")")));
-        _tm.write(tid, vid, val);
-        //System.out.println("write transaction " + tid);
-        //System.out.println("write variable " + vid + " with value " + val);
-      } else if(ope.contains("dump")) {
-        if (ope.contains("()")) {
-          dump();
-        } else if (ope.contains("x")) {
-          String vid = ope.substring(ope.indexOf("x") + 1, ope.indexOf(")"));
-          dump(vid);
-        } else {
-          String sid = ope.substring(ope.indexOf("(") + 1, ope.indexOf(")"));
-          dump(Integer.valueOf(sid));
-        }
-      } else if(ope.contains("fail")) {
-        int sid = Integer.parseInt(ope.substring(ope.indexOf("(")+1, ope.indexOf(")")));
-        failSite(sid);
-      } else if(ope.contains("recover")) {
-        int sid = Integer.parseInt(ope.substring(ope.indexOf("(")+1, ope.indexOf(")")));
-        recoverSite(sid);
-      } else if(ope.contains("end")) {
-        String tid = ope.substring(ope.indexOf("(")+1, ope.indexOf(")"));
-        System.out.println("end transaction " + tid);
-        _tm.commitTransaction(tid, _timestamp);
+  private void runCommand(String command) {
+    String ope = command.replaceAll("\\s+", "");
+    printVerbose(ope);
+    if(ope.contains("begin")) {
+      String tid = ope.substring(ope.indexOf("(")+1, ope.indexOf(")"));
+      boolean readOnly = false;
+      if(ope.contains("beginRO")) readOnly = true;
+      _tm.begin(tid, _timestamp, readOnly);
+    } else if(ope.contains("R")) {
+      int split = ope.indexOf(",");
+      String tid = ope.substring(ope.indexOf("(")+1, split);
+      String vid = ope.substring(split+1, ope.indexOf(")"));
+      _tm.read(tid, vid);
+    } else if(ope.contains("W")) {
+      int first = ope.indexOf(",");
+      String tid = ope.substring(ope.indexOf("(")+1, first);
+      int second = ope.indexOf(",", first + 1);
+      String vid = ope.substring(first+1, second);
+      int val = Integer.parseInt(ope.substring(second+1, ope.indexOf(")")));
+      _tm.write(tid, vid, val);
+    } else if(ope.contains("dump")) {
+      if (ope.contains("()")) {
+        dump();
+      } else if (ope.contains("x")) {
+        String vid = ope.substring(ope.indexOf("x") + 1, ope.indexOf(")"));
+        dump(vid);
+      } else {
+        String sid = ope.substring(ope.indexOf("(") + 1, ope.indexOf(")"));
+        dump(Integer.valueOf(sid));
       }
+    } else if(ope.contains("fail")) {
+      int sid = Integer.parseInt(ope.substring(ope.indexOf("(")+1, ope.indexOf(")")));
+      failSite(sid, _timestamp);
+    } else if(ope.contains("recover")) {
+      int sid = Integer.parseInt(ope.substring(ope.indexOf("(")+1, ope.indexOf(")")));
+      recoverSite(sid);
+    } else if(ope.contains("end")) {
+      String tid = ope.substring(ope.indexOf("(")+1, ope.indexOf(")"));
+      _tm.commitTransaction(tid, _timestamp);
     }
   }
 
@@ -130,9 +136,10 @@ public class DBSystem {
    *
    * @author Shuang
    */
-  public void failSite(int sid) {
-    Site s = _sites.get(sid);
-    s.fail();
+  public void failSite(int sid, int timestamp) {
+    Site s = _sites.get(sid - 1);
+    s.fail(timestamp);
+    printVerbose("site " + sid + " fails");
   }
 
   /**
@@ -142,8 +149,9 @@ public class DBSystem {
    * @author Shuang
    */
   public void recoverSite(int sid) {
-    Site s = _sites.get(sid);
+    Site s = _sites.get(sid - 1);
     s.recover();
+    printVerbose("site " + sid + " recovers");
   }
 
   /**
@@ -213,4 +221,41 @@ public class DBSystem {
       }
     }
   }
+
+  /**
+   * Print state for check in versbose mode
+   * @param message the state info
+   */
+  public void printVerbose(String message) {
+    if (verbose) {
+      System.out.println("# " + message);
+    }
+  }
+
+  public static void main(String[] args) {
+    DBSystem dbs = new DBSystem();
+
+    String fileName = getInput();
+    dbs.run(fileName);
+  }
+
+  private static String getInput() {
+    Scanner input = new Scanner(System.in);
+    String inputFile = null;
+    try {
+      File f;
+      do {
+        System.out.println("Enter input filename: ");
+        inputFile = input.next();
+        f = new File(inputFile);
+      } while (!f.exists());
+      input.close();
+    } catch (Exception e) {
+      System.out.println(e.getMessage());
+    }
+
+    return inputFile;
+  }
+
+
 }
