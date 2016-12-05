@@ -1,9 +1,11 @@
+import java.util.ArrayList;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.Queue;
 
 /**
  * Transaction object storing
- * transaction id, start/end time, operations and type
+ * transaction id, start/commitTransaction time, operations and type
  * @author Shuang on 11/29/16.
  */
 public class Transaction {
@@ -11,6 +13,7 @@ public class Transaction {
   public final int _startTimestamp;
   public final boolean _readOnly;
   public Operation _pendingOp = null;
+  private List<String> _dirtyVids = new ArrayList<>();
   private int _endTimeStamp;
 
   public Transaction(String id, int timestamp, boolean readOnly) {

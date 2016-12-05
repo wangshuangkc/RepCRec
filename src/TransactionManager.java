@@ -68,7 +68,7 @@ public class TransactionManager {
     }
 
     if (t._readOnly) {
-      int value = site.getVariable(vid).readOnly(t._startTimestamp);
+      int value = site.readVariable(vid, t._startTimestamp);
       System.out.println(tid + " reads " + vid + " on Site" + site._sid + ": " + value);
 
       return;
@@ -76,12 +76,16 @@ public class TransactionManager {
 
     boolean canRead = site.RLockVariable(tid, vid, _waitForGraph);
     if (canRead) {
-      int value = site.getVariable(vid).read();
+      int value = site.readVariable(vid, false);
       System.out.println(tid + " reads " + vid + " on site " + site._sid + ": " + value);
     } else {
       Operation op = new Operation(OperationType.R, vid);
       t.addOperation(op);
-      _waitingList.add(tid);
+      if (_waitingList.contains(tid)) {
+        detectDeadLock(_transactions.get(tid));
+      } else {
+        _waitingList.add(tid);
+      }
     }
   }
 
@@ -114,7 +118,7 @@ public class TransactionManager {
    * @param tid transaction id
    * @param vid variable id
    *
-   * @author Yuchang
+   * @author Yuchang, Shuang
    */
   public void write(String tid, String vid, int val) {
     if (_abortList.contains(tid)) {
@@ -134,23 +138,48 @@ public class TransactionManager {
       return;
     }
 
-    if(canWrite(tid, vid)) {
-      //write on all sites
-      for(Site s: _dbs._sites) {
-        if(s.getVariable(vid) == null) continue;
+    if(canWrite(tid, vid, _waitForGraph)) {
+      int vidx = Integer.valueOf(vid.substring(1));
+      if (vidx % 2 == 1) {
+        int sid = 1 + vidx % _dbs.NUM_SITE;
+        Site s = _dbs._sites.get(sid - 1);
         s.writeOnSite(vid, val);
+        System.out.println(tid + " writes on " + vid + " at site " + s + ": " + val);
+      } else {
+        //write on all sites
+        for (Site s : _dbs._sites) {
+          if (s.getVariable(vid) == null) {
+            continue;
+          }
+          s.writeOnSite(vid, val);
+        }
+        System.out.println(tid + " writes on " + vid + " at all sites: " + val);
       }
     } else {
       Operation op = new Operation(OperationType.W, vid, val);
       t.addOperation(op);
-      _waitingList.add(tid);
+      if (_waitingList.contains(tid)) {
+        detectDeadLock(_transactions.get(tid));
+      } else {
+        _waitingList.add(tid);
+      }
     }
   }
 
-  private boolean canWrite(String tid, String vid) {
+  private boolean canWrite(String tid, String vid, Map<String, List<String>> waitForGraph) {
     boolean res = true;
-    int numOfSites = _dbs._sites.size(), count = 0;
-    for(Site s: _dbs._sites) {
+    int vidx = Integer.valueOf(vid.substring(1));
+    int count = 0;
+    List<Site> temp = new ArrayList<>();
+    if (vidx % 2 == 1) {
+      int sid = 1 + vidx % _dbs.NUM_SITE;
+      Site s = _dbs._sites.get(sid - 1);
+      temp.add(s);
+    } else {
+      temp.addAll(_dbs._sites);
+    }
+
+    for(Site s: temp) {
       if(s.isFailed() || s.getVariable(vid)==null) {
         count++;
         continue;
@@ -160,7 +189,16 @@ public class TransactionManager {
         // if current lock for vid is not tid, it's lock by other, cannot write
         if(!lock._transactionId.equals(tid)) {
           res = false;           //should return false
-          s._lockTable.get(vid).add(new Lock(LockType.WL, tid, vid));
+          List<Lock> locks = s._lockTable.get(vid);
+          Set<String> waited = new HashSet<>();
+          for (Lock l : locks) {
+            waited.add(l._transactionId);
+          }
+          if (!_waitForGraph.containsKey(tid)) {
+            _waitForGraph.put(tid, new ArrayList<String>());
+          }
+          _waitForGraph.get(tid).addAll(waited);
+          locks.add(new Lock(LockType.WL, tid, vid));
         } else {
           if(lock._type.equals(LockType.RL)) {
             s._lockTable.get(vid).remove(lock);           // the first lock is by tid, but is read lock, remove it
@@ -173,7 +211,7 @@ public class TransactionManager {
         s._lockTable.put(vid, locks);
       }
     }
-    if(count == numOfSites) res = false; //all the sites fail or no working sites has var
+    if(count == _dbs.NUM_SITE) res = false; //all the sites fail or no working sites has var
     return res;
   }
 
@@ -187,23 +225,19 @@ public class TransactionManager {
   public void detectDeadLock(Transaction tran) {
     String tid = tran._tid;
     List<String> cycle;
-    if (!_waitingList.contains(tid)) {
-      _waitingList.add(tid);
-    } else {
-      System.out.println("Dead Lock detected!");
-      cycle = getCycle(tid);
-      Transaction aborted = tran;
-      int ts = -1;
-      for (String id : cycle) {
-        Transaction t = _transactions.get(id);
-        if (t._startTimestamp > ts) {
-          ts = t._startTimestamp;
-          aborted = t;
-        }
+    System.out.println("Dead Lock detected!");
+    cycle = getCycle(tid);
+    Transaction aborted = tran;
+    int ts = -1;
+    for (String id : cycle) {
+      Transaction t = _transactions.get(id);
+      if (t._startTimestamp > ts) {
+        ts = t._startTimestamp;
+        aborted = t;
       }
-      System.out.println("Abort " + aborted._tid + ".");
-      abortTransaction(aborted);
     }
+    System.out.println("Abort " + aborted._tid + ".");
+    abortTransaction(aborted);
   }
 
   private List<String> getCycle(String start) {
@@ -247,13 +281,14 @@ public class TransactionManager {
   }
 
   /**
-   * end operation
-   * end means commit the value of a variable
+   * commitTransaction operation
+   * commitTransaction means commit the value of a variable
    * @param tid given transaction id
    * @param timestamp current time
+   *
    * @author Yuchang
    */
-  public void end(String tid, int timestamp) {
+  public void commitTransaction(String tid, int timestamp) {
     _transactions.get(tid).commit(timestamp);
     for(Site s: _dbs._sites) {
       s.commitValue(tid, timestamp);

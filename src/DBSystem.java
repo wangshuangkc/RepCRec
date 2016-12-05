@@ -106,9 +106,9 @@ public class DBSystem {
       } else if(ope.contains("recover")) {
         int sid = Integer.parseInt(ope.substring(ope.indexOf("(")+1, ope.indexOf(")")));
         recoverSite(sid);
-      } else if(ope.contains("end")) {
+      } else if(ope.contains("commitTransaction")) {
         String tid = ope.substring(ope.indexOf("(")+1, ope.indexOf(")"));
-        _tm.end(tid, _timestamp);
+        _tm.commitTransaction(tid, _timestamp);
       }
     }
   }
@@ -158,14 +158,14 @@ public class DBSystem {
     StringBuffer sb = new StringBuffer("Site " + sid + ":\n");
     List<String> vids = s.getAllVariableIds();
     for (String vid : vids) {
-      int value = s.getVariable(vid).readLastCommited();
+      int value = s.readVariable(vid, true);
       sb.append(vid + ": " + value + "\n");
     }
     System.out.println(sb.toString());
   }
 
   /**
-   * Print the commited values of all copies of the given variable at all sites
+   * Print the committed values of all copies of the given variable at all sites
    * @param vid the variable id
    *
    * @author Shuang
@@ -175,12 +175,12 @@ public class DBSystem {
     if (vidx % 2 == 1) {
       int sid = 1 + vidx % NUM_SITE;
       Site s = _sites.get(sid - 1);
-      int value = s.getVariable(vid).readLastCommited();
+      int value = s.readVariable(vid, true);
       System.out.println(vid + ": " + value + " at site " + s._sid);
     } else {
       Map<Integer, List<Integer>> values = new HashMap<>();
       for (Site s : _sites) {
-        int value = s.getVariable(vid).readLastCommited();
+        int value = s.readVariable(vid, true);
         if (!values.containsKey(value)) {
           values.put(value, new ArrayList<Integer>());
         }
