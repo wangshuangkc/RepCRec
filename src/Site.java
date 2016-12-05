@@ -184,9 +184,20 @@ public class Site {
    *
    * @author Shuang
    */
-  public String[] getAllVariableIds() {
-    String[] vids = _variables.keySet().toArray(new String[_variables.keySet().size()]);
-    Arrays.sort(vids);
+  public List<String> getAllVariableIds() {
+    List<String> vids = new ArrayList<>();
+    for (String v : _variables.keySet()) {
+      vids.add(v);
+    }
+    Collections.sort(vids, new Comparator<String>() {
+      @Override
+      public int compare(String o1, String o2) {
+        int i1 = Integer.valueOf(o1.substring(1));
+        int i2 = Integer.valueOf(o2.substring(1));
+
+        return i1 - i2;
+      }
+    });
 
     return vids;
   }

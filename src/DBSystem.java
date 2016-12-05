@@ -181,15 +181,22 @@ public class DBSystem {
   /**
    * Print the committed values of all copies of all variables at site i
    * @param sid the site id
+   *
+   * @author Shuang
    */
   public void dump(int sid) {
     Site s = _sites.get(sid - 1);
     StringBuffer sb = new StringBuffer("Site " + sid + ":\n");
-    String[] vids = s.getAllVariableIds();
+    List<String> vids = s.getAllVariableIds();
     for (String vid : vids) {
       int value = s.getVariable(vid).readLastCommited();
       sb.append(vid + ": " + value + "\n");
     }
     System.out.println(sb.toString());
+  }
+
+  public void dump(String vid) {
+    int vidx = Integer.valueOf(vid.substring(1));
+
   }
 }
