@@ -186,7 +186,7 @@ public class TransactionManager {
    */
   public void detectDeadLock(Transaction tran) {
     String tid = tran._tid;
-    List<String> cycle = new ArrayList<>();
+    List<String> cycle;
     if (!_waitingList.contains(tid)) {
       _waitingList.add(tid);
     } else {

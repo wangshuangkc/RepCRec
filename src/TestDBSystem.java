@@ -16,8 +16,9 @@ public class TestDBSystem {
     DBSystem test = new DBSystem();
     test.readInputFile("test1.txt");
   }
+
   public static void testDump() {
-    System.out.println("Test Constructor");
+    System.out.println("Test Dump ");
     DBSystem test = new DBSystem();
     for (int i = 2; i <= test.NUM_SITE; i += 2) {
       String testVid = "x" + i;
@@ -27,9 +28,19 @@ public class TestDBSystem {
     }
     test.dump();
   }
+
+  public static void testDumpSite() {
+    System.out.println("Test Constructor");
+    DBSystem test = new DBSystem();
+    for (int i = 1; i < test.NUM_SITE; i += 3) {
+      test.dump(i);
+    }
+  }
+
   public static void main(String[] args) throws IOException {
-    testConstructor();
-    testDump();
-    testInput();
+    //testConstructor();
+    //testDump();
+    //testInput();
+    testDumpSite();
   }
 }

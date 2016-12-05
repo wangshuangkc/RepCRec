@@ -59,4 +59,13 @@ enum OperationType {
   public String toString() {
     return _type;
   }
+
+  public static void main(String[] args) {
+    OperationType t1 = OperationType.R;
+    OperationType t2 = OperationType.R;
+    OperationType t3 = OperationType.W;
+
+    System.out.println(t1 == t2);
+    System.out.println(t1 == t3);
+  }
 }

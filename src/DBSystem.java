@@ -1,8 +1,5 @@
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
+import java.util.*;
 import java.io.*;
-import java.util.Map;
 
 /**
  * Created by kc on 12/1/16.
@@ -113,10 +110,8 @@ public class DBSystem {
         String tid = ope.substring(ope.indexOf("(")+1, ope.indexOf(")"));
         _tm.end(tid, _timestamp);
       }
-
     }
   }
-
 
   /**
    * Fail the site when get fail(sid) from the input
@@ -183,11 +178,25 @@ public class DBSystem {
     System.out.println(sb.toString());
   }
 
+  /**
+   * Print the committed values of all copies of all variables at site i
+   * @param sid the site id
+   *
+   * @author Shuang
+   */
   public void dump(int sid) {
-    StringBuffer sb = new StringBuffer();
     Site s = _sites.get(sid - 1);
-    for (int i = 1; i <= NUM_VARIABLE; i++) {
-      String vid = "x" + i;
+    StringBuffer sb = new StringBuffer("Site " + sid + ":\n");
+    List<String> vids = s.getAllVariableIds();
+    for (String vid : vids) {
+      int value = s.getVariable(vid).readLastCommited();
+      sb.append(vid + ": " + value + "\n");
     }
+    System.out.println(sb.toString());
+  }
+
+  public void dump(String vid) {
+    int vidx = Integer.valueOf(vid.substring(1));
+
   }
 }
