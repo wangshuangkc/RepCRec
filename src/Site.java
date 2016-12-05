@@ -91,7 +91,7 @@ public class Site {
    *
    * @author Shuang
    */
-  public boolean RLockVariable(String tid, String vid, Map<String, List<String>> waitForGraph) {
+  public boolean RLockVariable(String tid, String vid, Map<String, Set<String>> waitForGraph) {
     if (!_variables.containsKey(vid)) {
       throw new IllegalArgumentException("Error: " + vid + " not found in the site " + _sid);
     }
@@ -105,27 +105,37 @@ public class Site {
       return true;
     } else {
       boolean canRead = true;
-      List<String> waited = new ArrayList<>();
+      Set<String> waited = new HashSet<>();
       List<Integer> offsets = new ArrayList<>();
+      for (Lock l : locks) {
+        if (canRead && l._transactionId.equals(tid)) {
+          return true;
+        } else if (l._type == LockType.WL) {
+          waited.add(l._transactionId);
+        }
+      }
+      waitForGraph.get(tid).addAll(waited);
+      /*
       for (Lock l : locks) {
         if ((canRead || waited.isEmpty()) && l._transactionId.equals(tid)) {
           return canRead;
         } else if (l._type == LockType.RL) {
           waited.add(l._transactionId);
           if (!canRead) {
-            List<String> tmp = new ArrayList<>();
+            Set<String> tmp = new HashSet<>();
             for (int i : offsets) {
               tmp.add(waited.get(i));
             }
-            waitForGraph.put(l._transactionId, tmp);
+            waitForGraph.get(tid).addAll(tmp);
           }
         } else {
+          waitForGraph
           waitForGraph.put(l._transactionId, waited);
           waited.add(l._transactionId);
           offsets.add(waited.size() - 1);
           canRead = false;
         }
-      }
+      } */
       locks.add(new Lock(LockType.RL, tid, vid));
 
       return canRead;
