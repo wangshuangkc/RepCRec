@@ -1,5 +1,4 @@
 import java.io.IOException;
-import java.util.Map;
 
 /**
  * Created by kc on 12/4/16.
@@ -14,7 +13,7 @@ public class TestDBSystem {
   public static void testInput() throws IOException{
     System.out.println("Test Input");
     DBSystem test = new DBSystem();
-    test.readInputFile("test1.txt");
+    test.readInputFile("test.txt");
   }
 
   public static void testDump() {
@@ -39,8 +38,8 @@ public class TestDBSystem {
 
   public static void main(String[] args) throws IOException {
     //testConstructor();
-    testDump();
-    //testInput();
+    //testDump();
+    testInput();
     //testDumpSite();
   }
 }
