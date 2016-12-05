@@ -10,7 +10,8 @@ public class TransactionManager {
     private List<String> _waitingList = new ArrayList<>();
     private List<String> _abortList = new ArrayList<>();
     private final DBSystem _dbs;
-    private Map<String, List<String>> _waitForGraph = new HashMap<>();
+    private Map<String, Set<String>> _waitForGraph = new HashMap<>();
+    //private Map<String, List<String>> _waitForGraph = new HashMap<>();
     private List<String> cycle = new ArrayList<>();
 
     public TransactionManager(DBSystem dbs) {
@@ -144,7 +145,7 @@ public class TransactionManager {
                 Site s = _dbs._sites.get(sid - 1);
                 s.writeOnSite(vid, val);
                 _transactions.get(tid)._dirtyVIds.add(vid);
-                System.out.println(tid + " writes on " + vid + " at site " + s + ": " + val);
+                System.out.println(tid + " writes on " + vid + " at site " + s._sid + ": " + val);
             } else {
                 //write on all sites
                 for (Site s : _dbs._sites) {
@@ -156,12 +157,11 @@ public class TransactionManager {
             System.out.println(tid + " cannot write currently");
             Operation op = new Operation(OperationType.W, vid, val);
             t.addOperation(op);
-            detectDeadLock(_transactions.get(tid));
-            /*if (_waitingList.contains(tid)) {
-
+            if (_waitingList.contains(tid)) {
+                detectDeadLock(_transactions.get(tid));
             } else {
                 _waitingList.add(tid);
-            }*/
+            }
         }
     }
 
@@ -195,7 +195,7 @@ public class TransactionManager {
                         waited.add(l._transactionId);
                     }
                     if (!_waitForGraph.containsKey(tid)) {
-                        _waitForGraph.put(tid, new ArrayList<String>());
+                        _waitForGraph.put(tid, new HashSet<String>());
                     }
                     _waitForGraph.get(tid).addAll(waited);
                     s._lockTable.get(vid).add(new Lock(LockType.WL, tid, vid));
@@ -227,7 +227,7 @@ public class TransactionManager {
         String tid = tran._tid;
         //List<String> cycle;
         for(String id: _waitForGraph.keySet()) {
-            System.out.print(id + " waited by: ");
+            System.out.print(id + " waiting for: ");
             for(String wid: _waitForGraph.get(id)) {
                 System.out.print(wid + " ");
             }
@@ -365,13 +365,13 @@ public class TransactionManager {
         tm._waitingList.add("T1");
         tm._waitingList.add("T2");
         tm._waitingList.add("T3");
-        List<String> l1 = new ArrayList<>();
+        Set<String> l1 = new HashSet<>();
         l1.add("T3");
         tm._waitForGraph.put("T1", l1);
-        List<String> l2 = new ArrayList<>();
+        Set<String> l2 = new HashSet<>();
         l2.add("T1");
         tm._waitForGraph.put("T2", l2);
-        List<String> l3 = new ArrayList<>();
+        Set<String> l3 = new HashSet<>();
         l3.add("T2");
         tm._waitForGraph.put("T3", l3);
         tm.detectDeadLock(tm._transactions.get("T1"));
