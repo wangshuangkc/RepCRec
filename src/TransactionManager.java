@@ -84,7 +84,7 @@ public class TransactionManager {
             Operation op = new Operation(OperationType.R, vid);
             t.addOperation(op);
             if (_waitingList.contains(tid)) {
-                detectDeadLock(_transactions.get(tid));
+                handleDeadLock(_transactions.get(tid));
             } else {
                 _waitingList.add(tid);
             }
@@ -157,9 +157,10 @@ public class TransactionManager {
             System.out.println(tid + " cannot write currently");
             Operation op = new Operation(OperationType.W, vid, val);
             t.addOperation(op);
-            if (_waitingList.contains(tid)) {
-                detectDeadLock(_transactions.get(tid));
+            if (isDeadLock("?", tid)) {
+                handleDeadLock(_transactions.get(tid));
             } else {
+                System.out.println(tid + " has to wait");
                 _waitingList.add(tid);
             }
         }
@@ -223,17 +224,10 @@ public class TransactionManager {
      * @param tran given transaction id
      * @author Yuchang
      */
-    public void detectDeadLock(Transaction tran) {
+    public void handleDeadLock(Transaction tran) {
         String tid = tran._tid;
-        //List<String> cycle;
-        for(String id: _waitForGraph.keySet()) {
-            System.out.print(id + " waiting for: ");
-            for(String wid: _waitForGraph.get(id)) {
-                System.out.print(wid + " ");
-            }
-        }
         System.out.println("Dead Lock detected!");
-        getCycle(tid);
+        List<String> cycle = getCycle(tid);
         Transaction aborted = tran;
         int ts = -1;
         for (String id : cycle) {
@@ -247,21 +241,35 @@ public class TransactionManager {
         abortTransaction(aborted);
     }
 
-    private void getCycle(String start) {
-        cycle.clear();
-        dfs(start);
+    private boolean isDeadLock(String tid, String start) {
+        if(tid.equals(start)) return true;
+        if(tid.equals("?")) tid = start;
+        if(!_waitForGraph.containsKey(tid) || _waitForGraph.get(tid).isEmpty()) return false;
+        for(String next: _waitForGraph.get(tid)) {
+            if(isDeadLock(next, start)) return true;
+        }
+        return false;
     }
 
-    private void dfs(String current) {
+
+    private List<String> getCycle(String start) {
+        List<String> cycle = new ArrayList<>();
+        List<String> res = new ArrayList<>();
+        dfs(start, cycle, res);
+        return res;
+    }
+
+    private void dfs(String current, List<String> cycle, List<String> res) {
         if (_waitForGraph.size() == 0 || !_waitForGraph.containsKey(current)) {
             return;
         }
-
         for (String tid : _waitForGraph.get(current)) {
             if (!cycle.contains(tid)) {
                 cycle.add(tid);
-                dfs(tid);
+                dfs(tid, cycle, res);
                 cycle.remove(tid);
+            } else {
+                res = new ArrayList<>(cycle);
             }
         }
     }
@@ -337,14 +345,16 @@ public class TransactionManager {
 
     private void runNextWaiting() {
         if (_waitingList.isEmpty()) {
-            System.out.println("There is no transaction waiting currently");
+            //System.out.println("There is no transaction waiting currently");
             return;
         }
-        for (String nextTid : _waitingList) {
-            if (_waitForGraph.containsKey(nextTid)) {
+        for (int i=0; i<_waitingList.size();) {
+            String nextTid = _waitingList.get(i);
+            if (_waitForGraph.containsKey(nextTid) && !_waitForGraph.get(nextTid).isEmpty()) {
                 System.out.println("Transaction " + nextTid + " still need to wait!");
                 break;
             }
+            _waitingList.remove(nextTid);
             String nextVid = _transactions.get(nextTid)._pendingOp._variableId;
             if (_transactions.get(nextTid)._pendingOp._type == OperationType.R) {
                 read(nextTid, nextVid);
@@ -374,6 +384,6 @@ public class TransactionManager {
         Set<String> l3 = new HashSet<>();
         l3.add("T2");
         tm._waitForGraph.put("T3", l3);
-        tm.detectDeadLock(tm._transactions.get("T1"));
+        tm.handleDeadLock(tm._transactions.get("T1"));
     }
 }
