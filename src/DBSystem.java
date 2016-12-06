@@ -12,7 +12,6 @@ public class DBSystem {
   int _timestamp = 0;
   final List<Site> _sites;
   final TransactionManager _tm = new TransactionManager(this);
-  // final List<String> _operations = new ArrayList<>();
   private boolean verbose = true;
 
   public DBSystem() {
@@ -137,9 +136,22 @@ public class DBSystem {
    * @author Shuang
    */
   public void failSite(int sid, int timestamp) {
-    Site s = _sites.get(sid - 1);
-    s.fail(timestamp);
     printVerbose("site " + sid + " fails");
+
+    Site s = _sites.get(sid - 1);
+    Set<String> abortedTids = new HashSet<>();
+    for (Map.Entry<String, List<Lock>> locks : s._lockTable.entrySet()) {
+      for (Lock l : locks.getValue()) {
+        String tid = l._transactionId;
+        abortedTids.add(tid);
+      }
+    }
+    for (String tid : abortedTids) {
+      _tm.abortTransaction(tid);
+      printVerbose("abort " + tid + " because site " + sid + " fails");
+    }
+
+    s.fail(timestamp);
   }
 
   /**
