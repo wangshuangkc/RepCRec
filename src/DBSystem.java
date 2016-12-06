@@ -131,7 +131,8 @@ public class DBSystem {
 
   /**
    * Fail the site when get fail(sid) from the input
-   * @param sid
+   * @param sid site id
+   * @param timestamp whent the site fails
    *
    * @author Shuang
    */
