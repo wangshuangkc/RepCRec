@@ -84,7 +84,9 @@ public class TransactionManager {
       t.addOperation(op);
       if (isDeadLock("?", tid)) {
         handleDeadLock(_transactions.get(tid));
-        if(!_abortList.contains(tid)) read(tid, vid);
+        if(!_abortList.contains(tid))  {
+          read(tid, vid);
+        }
       } else {
         _waitingList.add(tid);
         _dbs.printVerbose(tid + " waits");
@@ -304,6 +306,15 @@ public class TransactionManager {
 
     if (isAborted) {
       _abortList.add(abortedTid);
+      for (int sid : abortOne._touchSiteTime.keySet()) {
+        Site s = _dbs._sites.get(sid - 1);
+        for (String dv : abortOne._dirtyVIds) {
+          Variable v = s.getVariable(dv);
+          if (v != null) {
+              v.revert();
+          }
+        }
+      }
     }
     runNextWaiting();
   }

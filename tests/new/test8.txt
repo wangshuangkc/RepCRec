@@ -1,7 +1,7 @@
 // Test 8
 // T3 reads original value of x2, T4 reads x2 written by T1, T5 reads x2 written by T2.
-//
-// all commit
+// T8 aborts because of deadlock.
+// all others commit
 begin(T1)
 begin(T2)
 beginRO(T3)
