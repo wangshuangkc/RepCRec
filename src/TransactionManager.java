@@ -82,8 +82,9 @@ public class TransactionManager {
     } else {
       Operation op = new Operation(OperationType.R, vid);
       t.addOperation(op);
-      if (_waitingList.contains(tid)) {
+      if (isDeadLock("?", tid)) {
         handleDeadLock(_transactions.get(tid));
+        if(!_abortList.contains(tid)) read(tid, vid);
       } else {
         _waitingList.add(tid);
         _dbs.printVerbose(tid + " waits");
@@ -158,6 +159,7 @@ public class TransactionManager {
       t.addOperation(op);
       if (isDeadLock("?", tid)) {
         handleDeadLock(_transactions.get(tid));
+        if(!_abortList.contains(tid)) write(tid, vid, val);
       } else {
         _waitingList.add(tid);
         _dbs.printVerbose(tid + " waits");
@@ -303,7 +305,6 @@ public class TransactionManager {
     if (isAborted) {
       _abortList.add(abortedTid);
     }
-
     runNextWaiting();
   }
 
@@ -398,7 +399,8 @@ public class TransactionManager {
       String nextTid = _waitingList.get(i);
       if (_waitForGraph.containsKey(nextTid) && !_waitForGraph.get(nextTid).isEmpty()) {
         _dbs.printVerbose(nextTid + " still waits!");
-        break;
+        i++;
+        continue;
       }
       _waitingList.remove(nextTid);
       String nextVid = _transactions.get(nextTid)._pendingOp._variableId;
