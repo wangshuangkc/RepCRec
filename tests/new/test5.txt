@@ -1,4 +1,5 @@
 // Test 5
+// all ok.
 
 begin(T1)
 begin(T2)

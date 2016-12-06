@@ -1,4 +1,5 @@
 // Test 2
+// T1 ok. T2 ok.
 
 begin(T1)
 begin(T2)
@@ -14,4 +15,3 @@ W(T2,x7,7)
 end(T1)
 end(T2)
 recover(2)
-dump()

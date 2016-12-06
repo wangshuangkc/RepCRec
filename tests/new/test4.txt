@@ -1,5 +1,5 @@
 // Test 4
-
+// T4 fails because site 3 fails, T2 waits till then. T1, T2, T3 ok.
 begin(T1)
 begin(T2)
 begin(T3)

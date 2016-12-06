@@ -1,4 +1,5 @@
 // Test 3
+// T3 and T4 waits
 
 begin(T1)
 begin(T2)

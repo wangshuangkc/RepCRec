@@ -1,6 +1,7 @@
 // Test 6
+// T1, T2 waits till T3 ok. T4 reads x5 written by T4. T5 reads x5 written by T3. T6 reads x5 written by T4.
+// all commit.
 
-// items 1,2,3
 begin(T1)
 R(T1,x2)
 R(T1,x1)
@@ -19,7 +20,7 @@ R(T2, x4)
 R(T2, x2)
 end(T1)
 
-// item 4
+
 begin(T4)
 beginRO(T5)
 W(T4, x5, 20)
