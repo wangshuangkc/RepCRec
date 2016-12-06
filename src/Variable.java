@@ -101,7 +101,9 @@ public class Variable {
   }
 
   /**
-   * When a transaction is aborted
+   * When a transaction is aborted, revert the current value to the last committed
+   *
+   * @author Shuang
    */
   public void revert() {
     _value = readLastCommited();
@@ -136,6 +138,12 @@ public class Variable {
     return _canRead;
   }
 
+  /**
+   * Make the variable accessible for Read
+   * For replicated variables, when the site recovered, they needs to wait one Write before accessible for Read
+   *
+   * @author Shuang
+   */
   public void recoverVariable() {
     _canRead = true;
   }

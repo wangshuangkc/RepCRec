@@ -237,6 +237,8 @@ public class DBSystem {
   /**
    * Print state for check in versbose mode
    * @param message the state info
+   *
+   * @author Shuang
    */
   public void printVerbose(String message) {
     if (verbose) {

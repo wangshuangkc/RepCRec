@@ -35,6 +35,13 @@ public class Transaction {
     }
   }
 
+  /**
+   * Return when the site is touched first
+   * @param sid site id
+   * @return the timestamp the site is first touched; -1 if never touched the site
+   *
+   * @author Shuang
+   */
   public int whenTouchSite(int sid) {
     if (!_touchSiteTime.containsKey(sid)) {
       return -1;

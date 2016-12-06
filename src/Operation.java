@@ -1,6 +1,7 @@
 /**
  * Operation object storing:
  * operation type (Read or Write), the starting timestamp, the variable Id
+ *
  * @author Shuang on 11/29/16.
  */
 public class Operation {
@@ -11,6 +12,7 @@ public class Operation {
   /**
    * Constructor for Commit
    * @param type Commit
+   * @authro Shuang
    */
   public Operation(OperationType type) {
     _type = type;
@@ -21,6 +23,8 @@ public class Operation {
    * Constructor for Read
    * @param type Read
    * @param variable variable Id
+   *
+   * @authro Shuang
    */
   public Operation(OperationType type, String variable) {
     _type = type;
@@ -33,6 +37,8 @@ public class Operation {
    * @param variable variable Id
    * @param value the writing value
    * @throws IllegalArgumentException if the type is not Write
+   *
+   * @author Shuang
    */
   public Operation(OperationType type, String variable, int value) {
     if (type != OperationType.W) {
@@ -54,6 +60,11 @@ public class Operation {
   }
 }
 
+/**
+ * Operation types on values: Read, Write and Commit
+ *
+ * @author Shuang
+ */
 enum OperationType {
   R ("READ"),
   W ("WRITE"),

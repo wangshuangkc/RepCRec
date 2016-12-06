@@ -1,5 +1,5 @@
 import java.util.*;
-import java.util.Map;
+
 /**
  * Site Object storing:
  * site Id, variable map, status (if failed), and
@@ -55,6 +55,12 @@ public class Site {
     return _failed;
   }
 
+  /**
+   * Get the last timestamp when the site failed
+   * @return when the site last failed
+   *
+   * @author Shuang
+   */
   public int whenFailed() {
     return _failedTimeStamp;
   }
@@ -123,27 +129,6 @@ public class Site {
         waitForGraph.put(tid, new HashSet<String>());
       }
       waitForGraph.get(tid).addAll(waited);
-      /*
-      for (Lock l : locks) {
-        if ((canRead || waited.isEmpty()) && l._transactionId.equals(tid)) {
-          return canRead;
-        } else if (l._type == LockType.RL) {
-          waited.add(l._transactionId);
-          if (!canRead) {
-            Set<String> tmp = new HashSet<>();
-            for (int i : offsets) {
-              tmp.add(waited.get(i));
-            }
-            waitForGraph.get(tid).addAll(tmp);
-          }
-        } else {
-          waitForGraph
-          waitForGraph.put(l._transactionId, waited);
-          waited.add(l._transactionId);
-          offsets.add(waited.size() - 1);
-          canRead = false;
-        }
-      } */
       locks.add(new Lock(LockType.RL, tid, vid));
 
       return canRead;
@@ -220,22 +205,6 @@ public class Site {
       }
     }
   }
-
-  /**
-   * Commit the value a transaction modify when the transaction terminate
-   * @param tid commit transaction id
-   * @param timestamp the time when the transaction commit
-   * @author Yuchang
-   */
-//  public void commitValue(String tid, int timestamp) {
-//    for(String var: _lockTable.keySet()) {
-//      for(Lock lock: _lockTable.get(var)) {
-//        if(lock._transactionId.equals(tid)) {
-//          _variables.get(var).commit(timestamp);
-//        }
-//      }
-//    }
-//  }
 
   /**
    * Get a list of variable ids stored in the site
