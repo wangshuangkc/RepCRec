@@ -276,6 +276,14 @@ public class TransactionManager {
     }
   }
 
+  /**
+   * Abort the transaction by
+   * removing it from wait list, all existing in wait for graph, and
+   * adding to abort list
+   * @param abortedTid the transaction id
+   *
+   * @author Yuchang
+   */
   public void abortTransaction(String abortedTid) {
     Transaction abortOne = _transactions.get(abortedTid);
     for (int sid : abortOne._touchSiteTime.keySet()) {
@@ -299,9 +307,10 @@ public class TransactionManager {
   }
 
   /**
-   * commitTransaction operation
-   * commitTransaction means commit the value of a variable
-   *
+   * Commit the RW transaction by committing all dirty values, or
+   * abort if touched sites failed
+   * Commit the RO transaction by simply end the transaction, or
+   * wait if touched sites failed
    * @param tid       given transaction id
    * @param timestamp current time
    * @author Yuchang, Shuang
@@ -333,7 +342,6 @@ public class TransactionManager {
 
       return;
     }
-
 
     for (int sid : t._touchSiteTime.keySet()) {
       Site s = _dbs._sites.get(sid - 1);
