@@ -4,9 +4,18 @@
  * @author Shuang on 11/29/16.
  */
 public class Operation {
-  public final OperationType _type;
-  public final String _variableId;
+  final OperationType _type;
+  final String _variableId;
   private int _value;
+
+  /**
+   * Constructor for Commit
+   * @param type Commit
+   */
+  public Operation(OperationType type) {
+    _type = type;
+    _variableId = null;
+  }
 
   /**
    * Constructor for Read
@@ -47,7 +56,8 @@ public class Operation {
 
 enum OperationType {
   R ("READ"),
-  W ("WRITE");
+  W ("WRITE"),
+  C ("COMMIT");
 
   private final String _type;
 

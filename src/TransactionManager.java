@@ -71,7 +71,7 @@ public class TransactionManager {
     if (t._readOnly) {
       int value = site.readVariable(vid, t._startTimestamp);
       System.out.println(tid + " reads " + vid + " at site " + site._sid + ": " + value);
-
+      t.addTouchedSite(site._sid, _dbs._timestamp);
       return;
     }
 
@@ -305,6 +305,21 @@ public class TransactionManager {
    */
   public void commitTransaction(String tid, int timestamp) {
     Transaction t = _transactions.get(tid);
+
+    if (t._readOnly) {
+      for (int sid : t._touchSiteTime.keySet()) {
+        Site s = _dbs._sites.get(sid - 1);
+        if (s.isFailed()) {
+          Operation op = new Operation(OperationType.C);
+          t.addOperation(op);
+          _waitingList.add(tid);
+        } else {
+          commitTransaction(tid, _dbs._timestamp);
+        }
+      }
+      return;
+    }
+
     boolean canCommit = true;
     for (int sid : t._touchSiteTime.keySet()) {
       Site s = _dbs._sites.get(sid - 1);
@@ -356,6 +371,8 @@ public class TransactionManager {
       } else if (_transactions.get(nextTid)._pendingOp._type == OperationType.W) {
         int nextVal = _transactions.get(nextTid)._pendingOp.readValue();
         write(nextTid, nextVid, nextVal);
+      } else {
+        commitTransaction(nextTid, _dbs._timestamp);
       }
     }
   }
