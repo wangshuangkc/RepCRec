@@ -124,7 +124,7 @@ public class TransactionManager {
    */
   public void write(String tid, String vid, int val) {
     if (_abortList.contains(tid)) {
-      System.out.print("Failed to read " + vid + " because " + tid + " is aborted.");
+      System.out.println("Failed to read " + vid + " because " + tid + " is aborted.");
       return;
     }
 
@@ -301,7 +301,6 @@ public class TransactionManager {
       }
     }
     _waitForGraph.remove(abortOne._tid);
-    _abortList.add(abortedTid);
 
     runNextWaiting();
   }

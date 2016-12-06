@@ -83,7 +83,7 @@ public class DBSystem {
       }
       br.close();
     } catch (Exception e) {
-      System.out.println("Error: Invalid input file name. " + e.getMessage());
+      System.out.println("Error: " + e.getMessage());
     }
   }
 
@@ -136,7 +136,7 @@ public class DBSystem {
    * @author Shuang
    */
   public void failSite(int sid, int timestamp) {
-    printVerbose("site " + sid + " fails");
+    System.out.println("site " + sid + " fails");
 
     Site s = _sites.get(sid - 1);
     Set<String> abortedTids = new HashSet<>();
@@ -148,7 +148,7 @@ public class DBSystem {
     }
     for (String tid : abortedTids) {
       _tm.abortTransaction(tid);
-      printVerbose("abort " + tid + " because site " + sid + " fails");
+      System.out.println("abort " + tid + " because site " + sid + " fails");
     }
 
     s.fail(timestamp);
@@ -163,7 +163,7 @@ public class DBSystem {
   public void recoverSite(int sid) {
     Site s = _sites.get(sid - 1);
     s.recover();
-    printVerbose("site " + sid + " recovers");
+    System.out.println("site " + sid + " recovers");
   }
 
   /**
@@ -249,8 +249,13 @@ public class DBSystem {
   public static void main(String[] args) {
     DBSystem dbs = new DBSystem();
 
-    String fileName = getInput();
-    dbs.run(fileName);
+    //String fileName = getInput();
+    if (args.length < 1) {
+      System.out.println("Error: no valid input file");
+      System.exit(1);
+    }
+
+    dbs.run(args[0]);
   }
 
   private static String getInput() {

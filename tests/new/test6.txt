@@ -1,0 +1,35 @@
+// Test 6
+
+// items 1,2,3
+begin(T1)
+R(T1,x2)
+R(T1,x1)
+W(T1, x2, 10)
+R(T1, x2)
+
+begin(T2)
+begin(T3)
+W(T3, x4, 100)
+W(T3, x5, 100)
+R(T1, x4)
+R(T2, x5)
+end(T3)
+
+R(T2, x4)
+R(T2, x2)
+end(T1)
+
+// item 4
+begin(T4)
+beginRO(T5)
+W(T4, x5, 20)
+R(T5, x5)
+end(T2)
+end(T4)
+R(T5, x5)
+beginRO(T6)
+R(T6, x5)
+end(T5)
+
+end(T6)
+

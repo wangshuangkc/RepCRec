@@ -1,0 +1,17 @@
+// Test 2
+
+begin(T1)
+begin(T2)
+R(T1,x2)
+R(T2,x3)
+fail(2)
+W(T1,x2,2)
+W(T2,x3,3)
+R(T2,x5)
+W(T2,x5,5)
+R(T2,x7)
+W(T2,x7,7)
+end(T1)
+end(T2)
+recover(2)
+dump()
