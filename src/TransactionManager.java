@@ -71,12 +71,13 @@ public class TransactionManager {
 
     if (t._readOnly) {
       int value = site.readVariable(vid, t._startTimestamp);
-      System.out.println(tid + " reads " + vid + " at site" + site._sid + ": " + value);
+      System.out.println(tid + " reads " + vid + " at site " + site._sid + ": " + value);
 
       return;
     }
 
     boolean canRead = site.RLockVariable(tid, vid, _waitForGraph);
+    t.addTouchedSite(site._sid, _dbs._timestamp);
     if (canRead) {
       int value = site.readVariable(vid, false);
       System.out.println(tid + " reads " + vid + " at site " + site._sid + ": " + value);
@@ -87,6 +88,7 @@ public class TransactionManager {
         handleDeadLock(_transactions.get(tid));
       } else {
         _waitingList.add(tid);
+        _dbs.printVerbose(tid + " waits");
       }
     }
   }
@@ -186,6 +188,7 @@ public class TransactionManager {
         _dbs.printVerbose("cannot write on failed site " + s._sid);
         continue;
       }
+      _transactions.get(tid).addTouchedSite(s._sid, _dbs._timestamp);
       if (s._lockTable.containsKey(vid) && !s._lockTable.get(vid).isEmpty()) {
 
         Lock lock = s._lockTable.get(vid).get(0);  // current lock for vid
@@ -229,7 +232,7 @@ public class TransactionManager {
    */
   public void handleDeadLock(Transaction tran) {
     String tid = tran._tid;
-    System.out.println("Dead Lock detected!");
+    _dbs.printVerbose("dead Lock detected!");
     List<String> cycle = getCycle(tid);
     Transaction aborted = tran;
     int ts = -1;
@@ -240,7 +243,7 @@ public class TransactionManager {
         aborted = t;
       }
     }
-    System.out.println("Abort " + aborted._tid + ".");
+    System.out.println("abort " + aborted._tid);
     abortTransaction(aborted);
   }
 
@@ -253,7 +256,6 @@ public class TransactionManager {
     }
     return false;
   }
-
 
   private List<String> getCycle(String start) {
     List<String> cycle = new ArrayList<>();
@@ -307,26 +309,17 @@ public class TransactionManager {
   public void commitTransaction(String tid, int timestamp) {
     Transaction t = _transactions.get(tid);
     boolean canCommit = true;
-    for (String dv : t._dirtyVIds) {
-      int dvidx = Integer.valueOf(dv.substring(1));
-      if (dvidx % 2 == 1) {
-        int sid = 1 + dvidx % _dbs.NUM_SITE;
-        Site s = _dbs._sites.get(sid - 1);
-        if (s.isFailed()) {
-          canCommit = false;
-          break;
-        }
-      } else {
-        for (Site s : _dbs._sites) {
-          if (s.isFailed()) {
-            canCommit = false;
-            break;
-          }
-        }
+    for (int sid : t._touchSiteTime.keySet()) {
+      Site s = _dbs._sites.get(sid - 1);
+      int firstTouch = t._touchSiteTime.get(sid);
+      if (firstTouch <= s.whenFailed()) {
+        canCommit = false;
+        break;
       }
     }
 
-    for (Site s : _dbs._sites) {
+    for (int sid : t._touchSiteTime.keySet()) {
+      Site s = _dbs._sites.get(sid - 1);
       for (String dv : t._dirtyVIds) {
         Variable v = s.getVariable(dv);
         if (v != null) {
@@ -341,24 +334,22 @@ public class TransactionManager {
 
     if (!canCommit) {
       _abortList.add(tid);
-      _dbs.printVerbose("abort " + tid);
+      System.out.println("abort " + tid);
+    } else {
+      _dbs.printVerbose("commit " + tid);
     }
-//    for(Site s: _dbs._sites) {
-//      s.commitValue(tid, timestamp);
-//    }
 
     abortTransaction(_transactions.get(tid));
   }
 
   private void runNextWaiting() {
     if (_waitingList.isEmpty()) {
-      //System.out.println("There is no transaction waiting currently");
       return;
     }
     for (int i = 0; i < _waitingList.size(); ) {
       String nextTid = _waitingList.get(i);
       if (_waitForGraph.containsKey(nextTid) && !_waitForGraph.get(nextTid).isEmpty()) {
-        System.out.println("Transaction " + nextTid + " still need to wait!");
+        _dbs.printVerbose(nextTid + " still waits!");
         break;
       }
       _waitingList.remove(nextTid);
@@ -370,27 +361,5 @@ public class TransactionManager {
         write(nextTid, nextVid, nextVal);
       }
     }
-  }
-
-  public static void main(String[] args) {
-    System.out.println("Test deadlock detection");
-    DBSystem dbs = new DBSystem();
-    TransactionManager tm = new TransactionManager(dbs);
-    tm._transactions.put("T1", new Transaction("T1", 1, false));
-    tm._transactions.put("T1", new Transaction("T2", 2, false));
-    tm._transactions.put("T1", new Transaction("T3", 3, false));
-    tm._waitingList.add("T1");
-    tm._waitingList.add("T2");
-    tm._waitingList.add("T3");
-    Set<String> l1 = new HashSet<>();
-    l1.add("T3");
-    tm._waitForGraph.put("T1", l1);
-    Set<String> l2 = new HashSet<>();
-    l2.add("T1");
-    tm._waitForGraph.put("T2", l2);
-    Set<String> l3 = new HashSet<>();
-    l3.add("T2");
-    tm._waitForGraph.put("T3", l3);
-    tm.handleDeadLock(tm._transactions.get("T1"));
   }
 }

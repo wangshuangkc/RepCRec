@@ -56,7 +56,7 @@ public class Variable {
     List<Integer> timestamps = new ArrayList<>(_commits.keySet());
     int size = timestamps.size();
     if (timestamp > timestamps.get(size - 1)) {
-      return timestamps.get(size - 1);
+      return _commits.get(timestamps.get(size - 1));
     }
 
     int low = 0;

@@ -9,11 +9,11 @@ import java.io.*;
 public class DBSystem {
   static final int NUM_SITE = 10;
   static final int NUM_VARIABLE = 20;
-  private int _timestamp = 0;
+  int _timestamp = 0;
   final List<Site> _sites;
   final TransactionManager _tm = new TransactionManager(this);
   // final List<String> _operations = new ArrayList<>();
-  private static final boolean verbose = true;
+  private boolean verbose = true;
 
   public DBSystem() {
     _sites = setupSites();
@@ -70,7 +70,6 @@ public class DBSystem {
       printVerbose("Read input from " + fileName);
       String line;
       while ((line = br.readLine()) != null) {
-        _timestamp++;
         String[] events = line.split(";");
         for (String event : events) {
           if (event == null || event.trim().isEmpty() || event.startsWith("//")) {
@@ -79,6 +78,7 @@ public class DBSystem {
           if (event.contains("//")) {
             event = event.substring(0, event.indexOf("//"));
           }
+          _timestamp++;
           runCommand(event);
         }
       }
@@ -256,6 +256,4 @@ public class DBSystem {
 
     return inputFile;
   }
-
-
 }
