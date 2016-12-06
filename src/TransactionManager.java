@@ -98,7 +98,6 @@ public class TransactionManager {
       int sid = 1 + vIdx % _dbs.NUM_SITE;
       Site s = _dbs._sites.get(sid - 1);
       if (s.isFailed()) {
-        System.out.println("Site" + sid + " has failed.");
         return null;
       }
       return s;
