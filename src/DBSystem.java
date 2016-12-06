@@ -69,6 +69,7 @@ public class DBSystem {
       printVerbose("Read input from " + fileName);
       String line;
       while ((line = br.readLine()) != null) {
+        _timestamp++;
         String[] events = line.split(";");
         for (String event : events) {
           if (event == null || event.trim().isEmpty() || event.startsWith("//")) {
@@ -77,7 +78,6 @@ public class DBSystem {
           if (event.contains("//")) {
             event = event.substring(0, event.indexOf("//"));
           }
-          _timestamp++;
           runCommand(event);
         }
       }
@@ -164,6 +164,7 @@ public class DBSystem {
     Site s = _sites.get(sid - 1);
     s.recover();
     System.out.println("site " + sid + " recovers");
+    _tm.runNextWaiting();
   }
 
   /**

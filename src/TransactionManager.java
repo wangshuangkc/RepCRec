@@ -111,7 +111,7 @@ public class TransactionManager {
       }
     }
 
-    System.out.println("All sites have failed.");
+    System.out.println("No availabel site for accessing " + vid);
     return null;
   }
 
@@ -402,15 +402,21 @@ public class TransactionManager {
     abortTransaction(tid, !canCommit);
   }
 
-  private void runNextWaiting() {
+  /**
+   * Run waiting transactions
+   * If the transaction is clear, run it; still wait otherwise.
+   *
+   * @author Yuchang
+   */
+  public void runNextWaiting() {
     if (_waitingList.isEmpty()) {
       return;
     }
-    for (int i = 0; i < _waitingList.size(); ) {
-      String nextTid = _waitingList.get(i);
+    List<String> temp = new ArrayList<>();
+    temp.addAll(_waitingList);
+    for (String nextTid : temp) {
       if (_waitForGraph.containsKey(nextTid) && !_waitForGraph.get(nextTid).isEmpty()) {
         _dbs.printVerbose(nextTid + " still waits!");
-        i++;
         continue;
       }
       _waitingList.remove(nextTid);
