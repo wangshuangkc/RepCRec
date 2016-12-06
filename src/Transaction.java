@@ -1,7 +1,4 @@
-import java.util.ArrayList;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Queue;
+import java.util.*;
 
 /**
  * Transaction object storing
@@ -14,6 +11,7 @@ public class Transaction {
   final boolean _readOnly;
   final List<String> _dirtyVIds = new ArrayList<>();
   Operation _pendingOp = null;
+  final Map<Integer, Integer> _touchSiteTime = new HashMap<>();
 
   public Transaction(String id, int timestamp, boolean readOnly) {
     _tid = id;
@@ -24,8 +22,16 @@ public class Transaction {
   /**
    * Receive copy operation to transaction
    * @param op copy operation
+   *
+   * @author Shuang
    */
   public void addOperation(Operation op) {
     _pendingOp = op;
+  }
+
+  public void addTouchedSite(int sid, int timestamp) {
+    if (!_touchSiteTime.containsKey(sid)) {
+      _touchSiteTime.put(sid, timestamp);
+    }
   }
 }

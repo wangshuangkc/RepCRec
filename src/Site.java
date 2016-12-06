@@ -116,7 +116,11 @@ public class Site {
           return true;
         } else if (l._type == LockType.WL) {
           waited.add(l._transactionId);
+          canRead = false;
         }
+      }
+      if (!waitForGraph.containsKey(tid)) {
+        waitForGraph.put(tid, new HashSet<String>());
       }
       waitForGraph.get(tid).addAll(waited);
       /*
