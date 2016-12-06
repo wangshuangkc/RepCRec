@@ -8,10 +8,9 @@ import java.util.*;
 public class TransactionManager {
   private Map<String, Transaction> _transactions = new HashMap<>();
   private List<String> _waitingList = new ArrayList<>();
-  private List<String> _abortList = new ArrayList<>();
+  private Set<String> _abortList = new HashSet<>();
   private final DBSystem _dbs;
   private Map<String, Set<String>> _waitForGraph = new HashMap<>();
-  private List<String> cycle = new ArrayList<>();
 
   public TransactionManager(DBSystem dbs) {
     _dbs = dbs;
@@ -240,7 +239,7 @@ public class TransactionManager {
       }
     }
     System.out.println("abort " + aborted._tid);
-    abortTransaction(aborted._tid);
+    abortTransaction(aborted._tid, true);
   }
 
   private boolean isDeadLock(String tid, String start) {
@@ -283,14 +282,14 @@ public class TransactionManager {
    *
    * @author Yuchang
    */
-  public void abortTransaction(String abortedTid) {
+  public void abortTransaction(String abortedTid, boolean isAborted) {
     Transaction abortOne = _transactions.get(abortedTid);
     for (int sid : abortOne._touchSiteTime.keySet()) {
       Site site = _dbs._sites.get(sid - 1);
       site.releaseLocks(abortOne);
     }
 
-    _waitingList.remove(abortOne);
+    _waitingList.remove(abortedTid);
     for (String tid : _waitForGraph.keySet()) {
       for (String child : _waitForGraph.get(tid)) {
         if (abortOne._tid.equals(child)) {
@@ -301,7 +300,21 @@ public class TransactionManager {
     }
     _waitForGraph.remove(abortOne._tid);
 
+    if (isAborted) {
+      _abortList.add(abortedTid);
+    }
+
     runNextWaiting();
+  }
+
+  /**
+   * Add aborted transaction into abort list
+   * @param tid aborted transaction id
+   *
+   * @author Shuang
+   */
+  public void addAbort(String tid) {
+    _abortList.add(tid);
   }
 
   /**
@@ -318,8 +331,12 @@ public class TransactionManager {
       System.out.println("Failed: " + tid + " was aborted");
       return;
     }
+
     Transaction t = _transactions.get(tid);
     boolean canCommit = true;
+    if (_waitingList.contains(tid) && isDeadLock("?", tid)) {
+      handleDeadLock(t);
+    }
 
     if (t._readOnly) {
       for (int sid : t._touchSiteTime.keySet()) {
@@ -331,7 +348,7 @@ public class TransactionManager {
       }
 
       if (canCommit) {
-        _dbs.printVerbose("commit " + tid);
+        System.out.println("commit " + tid);
       } else {
         Operation op = new Operation(OperationType.C);
         t.addOperation(op);
@@ -365,13 +382,12 @@ public class TransactionManager {
     }
 
     if (!canCommit) {
-      _abortList.add(tid);
       System.out.println("abort " + tid);
     } else {
-      _dbs.printVerbose("commit " + tid);
+      System.out.println("commit " + tid);
     }
 
-    abortTransaction(tid);
+    abortTransaction(tid, !canCommit);
   }
 
   private void runNextWaiting() {

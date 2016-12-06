@@ -147,8 +147,8 @@ public class DBSystem {
       }
     }
     for (String tid : abortedTids) {
-      _tm.abortTransaction(tid);
       System.out.println("abort " + tid + " because site " + sid + " fails");
+      _tm.abortTransaction(tid, true);
     }
 
     s.fail(timestamp);

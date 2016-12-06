@@ -1,5 +1,6 @@
 // Test 7
-
+// T4 waits for at least one up site. T4 aborts because site 2 fails after its touch.
+// all others ok.
 begin(T1)
 begin(T2)
 beginRO(T3)
