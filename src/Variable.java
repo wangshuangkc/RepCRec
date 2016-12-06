@@ -135,4 +135,8 @@ public class Variable {
   public boolean canRead() {
     return _canRead;
   }
+
+  public void recoverVariable() {
+    _canRead = true;
+  }
 }

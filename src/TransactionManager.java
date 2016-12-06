@@ -43,7 +43,7 @@ public class TransactionManager {
    */
   public void read(String tid, String vid) {
     if (_abortList.contains(tid)) {
-      _dbs.printVerbose("Failed: " + tid + " is aborted.");
+      System.out.println("Failed to read " + vid + " because " + tid + " is aborted.");
       return;
     }
 
@@ -71,7 +71,7 @@ public class TransactionManager {
     if (t._readOnly) {
       int value = site.readVariable(vid, t._startTimestamp);
       System.out.println(tid + " reads " + vid + " at site " + site._sid + ": " + value);
-
+      t.addTouchedSite(site._sid, _dbs._timestamp);
       return;
     }
 
@@ -124,7 +124,7 @@ public class TransactionManager {
    */
   public void write(String tid, String vid, int val) {
     if (_abortList.contains(tid)) {
-      System.out.println("Error: cannot write " + vid + " because " + tid + " is aborted.");
+      System.out.print("Failed to read " + vid + " because " + tid + " is aborted.");
       return;
     }
 
@@ -241,7 +241,7 @@ public class TransactionManager {
       }
     }
     System.out.println("abort " + aborted._tid);
-    abortTransaction(aborted);
+    abortTransaction(aborted._tid);
   }
 
   private boolean isDeadLock(String tid, String start) {
@@ -276,13 +276,14 @@ public class TransactionManager {
     }
   }
 
-  private void abortTransaction(Transaction abortOne) {
-    for (Site site : _dbs._sites) {
+  public void abortTransaction(String abortedTid) {
+    Transaction abortOne = _transactions.get(abortedTid);
+    for (int sid : abortOne._touchSiteTime.keySet()) {
+      Site site = _dbs._sites.get(sid - 1);
       site.releaseLocks(abortOne);
     }
 
     _waitingList.remove(abortOne);
-
     for (String tid : _waitForGraph.keySet()) {
       for (String child : _waitForGraph.get(tid)) {
         if (abortOne._tid.equals(child)) {
@@ -292,6 +293,8 @@ public class TransactionManager {
       }
     }
     _waitForGraph.remove(abortOne._tid);
+    _abortList.add(abortedTid);
+
     runNextWaiting();
   }
 
@@ -304,8 +307,34 @@ public class TransactionManager {
    * @author Yuchang, Shuang
    */
   public void commitTransaction(String tid, int timestamp) {
+    if (_abortList.contains(tid)) {
+      System.out.println("Failed: " + tid + " was aborted");
+      return;
+    }
     Transaction t = _transactions.get(tid);
     boolean canCommit = true;
+
+    if (t._readOnly) {
+      for (int sid : t._touchSiteTime.keySet()) {
+        Site s = _dbs._sites.get(sid - 1);
+        if (s.isFailed()) {
+          canCommit = false;
+          break;
+        }
+      }
+
+      if (canCommit) {
+        _dbs.printVerbose("commit " + tid);
+      } else {
+        Operation op = new Operation(OperationType.C);
+        t.addOperation(op);
+        _waitingList.add(tid);
+      }
+
+      return;
+    }
+
+
     for (int sid : t._touchSiteTime.keySet()) {
       Site s = _dbs._sites.get(sid - 1);
       int firstTouch = t._touchSiteTime.get(sid);
@@ -336,7 +365,7 @@ public class TransactionManager {
       _dbs.printVerbose("commit " + tid);
     }
 
-    abortTransaction(_transactions.get(tid));
+    abortTransaction(tid);
   }
 
   private void runNextWaiting() {
@@ -356,6 +385,8 @@ public class TransactionManager {
       } else if (_transactions.get(nextTid)._pendingOp._type == OperationType.W) {
         int nextVal = _transactions.get(nextTid)._pendingOp.readValue();
         write(nextTid, nextVid, nextVal);
+      } else {
+        commitTransaction(nextTid, _dbs._timestamp);
       }
     }
   }

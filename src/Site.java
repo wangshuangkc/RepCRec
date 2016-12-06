@@ -196,6 +196,10 @@ public class Site {
     }
     Variable var = _variables.get(vid);
     var.write(val);
+    if (_failedTimeStamp > -1) {
+      var.recoverVariable();
+    }
+    var.recoverVariable();
     _variables.put(vid, var);
   }
 
