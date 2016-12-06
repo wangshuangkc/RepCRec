@@ -13,7 +13,7 @@ public class TestDBSystem {
   public static void testInput(int i) throws IOException{
     System.out.println("Test Input");
     DBSystem test = new DBSystem();
-    test.run("tests/sample/test" + i + ".txt");
+    test.run("tests/new/test" + i + ".txt");
   }
 
   public static void testDump() {
@@ -39,7 +39,7 @@ public class TestDBSystem {
   public static void main(String[] args) throws IOException {
     //testConstructor();
     //testDump();
-    testInput(16);
+    testInput(6);
     //testDumpSite();
   }
 }
