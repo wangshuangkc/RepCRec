@@ -39,7 +39,7 @@ public class TestDBSystem {
   public static void main(String[] args) throws IOException {
     //testConstructor();
     //testDump();
-    testInput(9);
+    testInput(15);
     //testDumpSite();
   }
 }

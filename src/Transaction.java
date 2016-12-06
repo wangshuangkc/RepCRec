@@ -34,4 +34,12 @@ public class Transaction {
       _touchSiteTime.put(sid, timestamp);
     }
   }
+
+  public int whenTouchSite(int sid) {
+    if (!_touchSiteTime.containsKey(sid)) {
+      return -1;
+    }
+
+    return _touchSiteTime.get(sid);
+  }
 }
