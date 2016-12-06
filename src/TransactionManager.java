@@ -11,7 +11,6 @@ public class TransactionManager {
   private List<String> _abortList = new ArrayList<>();
   private final DBSystem _dbs;
   private Map<String, Set<String>> _waitForGraph = new HashMap<>();
-  //private Map<String, List<String>> _waitForGraph = new HashMap<>();
   private List<String> cycle = new ArrayList<>();
 
   public TransactionManager(DBSystem dbs) {
@@ -157,14 +156,13 @@ public class TransactionManager {
         _dbs.printVerbose(tid + " writes on " + vid + " at all available sites: " + val);
       }
     } else {
-      System.out.println(tid + " cannot write currently");
       Operation op = new Operation(OperationType.W, vid, val);
       t.addOperation(op);
       if (isDeadLock("?", tid)) {
         handleDeadLock(_transactions.get(tid));
       } else {
-        System.out.println(tid + " has to wait");
         _waitingList.add(tid);
+        _dbs.printVerbose(tid + " waits");
       }
     }
   }
@@ -190,26 +188,25 @@ public class TransactionManager {
       }
       _transactions.get(tid).addTouchedSite(s._sid, _dbs._timestamp);
       if (s._lockTable.containsKey(vid) && !s._lockTable.get(vid).isEmpty()) {
-
-        Lock lock = s._lockTable.get(vid).get(0);  // current lock for vid
-        // if current lock for vid is not tid, it's lock by other, cannot write
-        if (!lock._transactionId.equals(tid)) {
-          res = false;           //should return false
-          List<Lock> locks = s._lockTable.get(vid);
-          Set<String> waited = new HashSet<>();
-          for (Lock l : locks) {
-            waited.add(l._transactionId);
-          }
-          if (!_waitForGraph.containsKey(tid)) {
-            _waitForGraph.put(tid, new HashSet<String>());
-          }
-          _waitForGraph.get(tid).addAll(waited);
-          s._lockTable.get(vid).add(new Lock(LockType.WL, tid, vid));
-        } else {
-          if (lock._type.equals(LockType.RL)) {
-            s._lockTable.get(vid).remove(lock);           // the first lock is by tid, but is read lock, remove it
+        List<Lock> locks = s._lockTable.get(vid);
+        if (locks.get(0)._transactionId.equals(tid)) {
+          if (locks.get(0)._type.equals(LockType.RL)) {
+            s._lockTable.get(vid).remove(0);           // the first lock is by tid, but is read lock, remove it
             s._lockTable.get(vid).add(0, new Lock(LockType.WL, tid, vid));  // replace the read lock with write lock
           }
+        } else {
+          res = false;
+          Set<String> waited = new HashSet<>();
+          for (Lock l : locks) {
+            if (!l._transactionId.equals(tid)) {
+              waited.add(l._transactionId);
+            }
+            if (!_waitForGraph.containsKey(tid)) {
+              _waitForGraph.put(tid, new HashSet<String>());
+            }
+            _waitForGraph.get(tid).addAll(waited);
+          }
+          s._lockTable.get(vid).add(new Lock(LockType.WL, tid, vid));
         }
       } else {
         List<Lock> locks = new ArrayList<>();

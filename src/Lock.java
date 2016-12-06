@@ -6,9 +6,9 @@ import java.util.Objects;
  * @author  on 11/29/16.
  */
 public class Lock {
-  public final LockType _type;
-  public final String _transactionId;
-  public final String _variableId;
+  final LockType _type;
+  final String _transactionId;
+  final String _variableId;
   private boolean shared;
 
   public Lock(LockType type, String transactionId, String variableId) {
